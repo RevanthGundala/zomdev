@@ -26,6 +26,8 @@ import {
   TypewriterEffectSmooth,
 } from "@/components/ui/typewriter-effect";
 import ImageSection from "@/components/LandingPage/ImageSection";
+import HeroSection from "@/components/LandingPage/HeroSection";
+import InfoSection from "@/components/LandingPage/InfoSection";
 
 export default function Home() {
   const section1 = useRef(null);
@@ -37,115 +39,13 @@ export default function Home() {
     amount: 0.4,
   });
 
-  useEffect;
-
   return (
     <>
       <Navbar />
-      <motion.div
-        initial={{
-          backgroundColor: "#FFFFFF",
-        }}
-        animate={{
-          backgroundColor: isInView1 ? "#000000" : "#FFFFFF",
-        }}
-        transition={{ duration: 1 }}
-        className="min-h-screen"
-      >
-        <HeroHighlight>
-          <motion.h1
-            initial={{
-              opacity: 0,
-              y: 20,
-            }}
-            animate={{
-              opacity: 1,
-              y: [20, -5, 0],
-            }}
-            transition={{
-              duration: 0.5,
-              ease: [0.4, 0.0, 0.2, 1],
-            }}
-            className="text-2xl px-4 md:text-4xl lg:text-5xl font-bold text-neutral-700 dark:text-white max-w-4xl leading-relaxed lg:leading-snug text-center mx-auto mt-20"
-          >
-            Earn rewards for supporting the people you love
-          </motion.h1>
-          <motion.p
-            initial={{
-              opacity: 0,
-              y: 20,
-            }}
-            animate={{
-              opacity: 1,
-              y: [20, -5, 0],
-            }}
-            transition={{
-              duration: 0.5,
-              ease: [0.4, 0.0, 0.2, 1],
-            }}
-            className="text-center py-4 md:text-2xl mt-2"
-          >
-            <Highlight className="p-2">
-              {/* A Fan Engagement Platform built for entertainers and fans */}
-              Loyalty Programs for Entertainers
-            </Highlight>
-          </motion.p>
-          <motion.div
-            initial={{
-              opacity: 0,
-              y: 20,
-            }}
-            animate={{
-              opacity: 1,
-              y: [20, -5, 0],
-            }}
-            transition={{
-              duration: 0.5,
-              ease: [0.4, 0.0, 0.2, 1],
-            }}
-          ></motion.div>
-        </HeroHighlight>
+      <HeroSection />
+      <InfoSection isInView1={isInView1} section1={section1} />
 
-        {/* <CreatorsAnimation /> */}
-      </motion.div>
-
-      <motion.div
-        initial={{
-          backgroundColor: "#FFFFFF",
-        }}
-        animate={{
-          backgroundColor: isInView1 ? "#000000" : "#FFFFFF",
-        }}
-        transition={{ duration: 1.5 }}
-        ref={section1}
-        className="min-h-screen"
-      >
-        <HeroHighlight>
-          <motion.p
-            className={
-              isInView1
-                ? "text-white text-center text-xl md:text-4xl lg:text-6xl lg:mx-60"
-                : "text-black text-center text-xl md:text-4xl lg:text-6xl lg:mx-60"
-            }
-          >
-            Turn your engagement into an asset
-          </motion.p>
-        </HeroHighlight>
-        <motion.div className="flex justify-between lg:mx-60">
-          <motion.div className="flex flex-col justify-between text-white lg:text-4xl">
-            <motion.p>1. Hello</motion.p>
-            <motion.p>2. Hello</motion.p>
-            <motion.p>3. Hello</motion.p>
-          </motion.div>
-          <motion.img
-            src={"./Fantura Overview.png"}
-            alt="Fantura Overview"
-            className="h-30 w-30"
-          />
-        </motion.div>
-      </motion.div>
-
-      <motion.div
+      {/* <motion.div
         initial={{
           backgroundColor: "#000000",
         }}
@@ -159,13 +59,13 @@ export default function Home() {
           <motion.p className="text-center py-4 text-xl md:text-4xl lg:text-6xl lg:mx-60">
             Think Loyalty Programs, but for Entertainers
           </motion.p>
-          {/* <motion.p className="text-center py-4 text-sm md:text-md lg:text-lg lg:mx-60">
+          <motion.p className="text-center py-4 text-sm md:text-md lg:text-lg lg:mx-60">
             From creators to organizations, Fantura creates new opportunities
             for fans to engage with their favorite entertainers.
-          </motion.p> */}
+          </motion.p>
         </HeroHighlight>
         <ImageSection />
-      </motion.div>
+      </motion.div> */}
 
       {/* <div className="h-[40rem] w-full rounded-md flex md:items-center md:justify-center bg-black/[0.96] antialiased bg-grid-white/[0.02] relative overflow-hidden">
         <Spotlight
@@ -193,7 +93,7 @@ export default function Home() {
         />
       </div> */}
 
-      <motion.div
+      {/* <motion.div
         initial={{
           backgroundColor: "#FFFFFF",
         }}
@@ -209,8 +109,8 @@ export default function Home() {
             Start Earning Today
           </motion.p>
         </HeroHighlight>
-        {/* <ParallaxScroll images={images} /> */}
-      </motion.div>
+        <ParallaxScroll images={images} />
+      </motion.div> */}
       <SignUp />
 
       <Footer />

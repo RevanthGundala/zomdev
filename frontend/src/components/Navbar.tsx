@@ -53,7 +53,7 @@ import { Feedback } from "./Feedback";
 export default function Navbar() {
   return (
     <NavigationMenu className={"min-w-full fixed top-0 z-50 bg-white"}>
-      <NavigationMenuList className="flex space-x-4 p-8 items-center">
+      <NavigationMenuList className="flex space-x-4 px-20 py-8 items-center">
         <NavigationMenuItem className="flex">
           <Link href="/" legacyBehavior passHref>
             <img src="/vercel.svg" alt="Logo" className="h-8" />

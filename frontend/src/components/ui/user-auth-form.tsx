@@ -6,21 +6,57 @@ import { Icons } from "./icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";
+import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
+import { useRouter } from "next/navigation";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const router = useRouter();
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
     setIsLoading(true);
-
-    // TODO: Handle Google Auth Logic
-
     setTimeout(() => {
       setIsLoading(false);
     }, 3000);
+  }
+
+  // TODO: Implement this function
+  function isSignedIn() {
+    return false;
+  }
+
+  async function handleAuth() {
+    setIsLoading(true);
+    if (isSignedIn()) return;
+    const client = new SuiClient({ url: getFullnodeUrl("testnet") });
+    const { epoch } = await client.getLatestSuiSystemState();
+    const maxEpoch = Number(epoch) + 2;
+    const ephemeralKey = new Ed25519Keypair();
+    // const randomness = generateRandomness();
+    // const nonce = generateNonce(
+    //   ephemeralKey.getPublicKey(),
+    //   maxEpoch,
+    //   randomness
+    // );
+    // const state = {
+    //   randomness,
+    //   maxEpoch,
+    //   ephemeralKey,
+    // };
+    // const encodedState = encodeURIComponent(JSON.stringify(state));
+    const params = new URLSearchParams({
+      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+      redirect_uri: process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!,
+      response_type: "code",
+      scope: "openid",
+    });
+    const loginURL = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
+    router.push(loginURL);
+    setIsLoading(false);
   }
 
   return (
@@ -59,7 +95,12 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           </span>
         </div>
       </div>
-      <Button variant="outline" type="button" disabled={isLoading}>
+      <Button
+        variant="outline"
+        type="button"
+        disabled={isLoading}
+        onClick={handleAuth}
+      >
         {isLoading ? (
           <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
         ) : (
