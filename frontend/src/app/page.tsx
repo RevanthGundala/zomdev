@@ -39,12 +39,27 @@ export default function Home() {
     amount: 0.4,
   });
 
+  async function getZkLoginSignature() {
+    try {
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + "/get-profile"
+      );
+      const data = await response.json();
+      console.log("data: ", data);
+    } catch (e) {
+      console.log("error: ", e);
+    }
+  }
+
   return (
     <>
       <Navbar />
+
       <HeroSection />
       <InfoSection isInView1={isInView1} section1={section1} />
-
+      <button className="z-100" onClick={getZkLoginSignature}>
+        Get ZkLogin Signature
+      </button>
       {/* <motion.div
         initial={{
           backgroundColor: "#000000",

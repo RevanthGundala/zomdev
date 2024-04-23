@@ -13,7 +13,8 @@ export const loginCallback = new aws.lambda.CallbackFunction("loginCallback", {
         body: "Code not Found",
       };
     }
-    // TODO: Move to cloud env
+
+    // TODO: Move to cloud environment variables for security
     const clientId = process.env.GOOGLE_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
     const redirectUri = process.env.GOOGLE_REDIRECT_URI;
@@ -40,7 +41,7 @@ export const loginCallback = new aws.lambda.CallbackFunction("loginCallback", {
         statusCode: 302,
         headers: {
           "Set-Cookie":
-            "testCookie=123; Path=/; SameSite=None; Secure; Domain=localhost; HttpOnly; Max-Age=31536000;",
+            "testCookie=12345; Path=/; SameSite=Lax; HttpOnly; Max-Age=3600;",
           Location: url,
         },
       };
