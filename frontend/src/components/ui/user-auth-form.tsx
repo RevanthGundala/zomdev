@@ -57,7 +57,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     });
     console.log("Params: ", params.toString());
     const loginURL = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
-    router.push(loginURL);
+    // router.push(loginURL);
     setIsLoading(false);
   }
 
