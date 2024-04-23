@@ -4,7 +4,7 @@ import { APIGatewayProxyEventV2 } from "aws-lambda";
 // A Lambda function to invoke
 export const loginCallback = new aws.lambda.CallbackFunction("loginCallback", {
   callback: async (event: APIGatewayProxyEventV2) => {
-    const url = "http://localhost:3000/";
+    const url = "https://fantura.vercel.app";
 
     const { code } = event.queryStringParameters || {};
     if (!code) {
@@ -40,8 +40,7 @@ export const loginCallback = new aws.lambda.CallbackFunction("loginCallback", {
       return {
         statusCode: 302,
         headers: {
-          "Set-Cookie":
-            "testCookie=12345; Path=/; SameSite=Lax; HttpOnly; Max-Age=3600;",
+          "Set-Cookie": `testCookie=12345; Path=/; Domain=https://gaa876jg49.execute-api.us-west-2.amazonaws.com; SameSite=Lax; HttpOnly; Max-Age=3600;`,
           Location: url,
         },
       };
