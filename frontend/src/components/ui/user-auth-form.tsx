@@ -53,6 +53,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       redirect_uri: process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!,
       response_type: "code",
       scope: "openid",
+      ack_oob_shutdown: "2022-10-03",
     });
     console.log("Params: ", params.toString());
     const loginURL = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
