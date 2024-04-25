@@ -41,6 +41,7 @@ export default function Home() {
 
   async function getZkLoginSignature() {
     try {
+      // TODO: Switch to server function
       const response = await fetch(
         process.env.NEXT_PUBLIC_API_URL + "/get-profile"
       );
