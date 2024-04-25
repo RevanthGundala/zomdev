@@ -43,7 +43,8 @@ export default function Home() {
     try {
       // TODO: Switch to server function
       const response = await fetch(
-        process.env.NEXT_PUBLIC_API_URL + "/get-profile"
+        "https://gaa876jg49.execute-api.us-west-2.amazonaws.com/stage" +
+          "/get-profile"
       );
       const data = await response.json();
       console.log("data: ", data);
