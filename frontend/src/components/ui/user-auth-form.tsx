@@ -55,7 +55,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       scope: "openid",
     });
     const loginURL = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
-    router.push(loginURL);
+    console.log("loginURL", loginURL);
+    //router.push(loginURL);
     setIsLoading(false);
   }
 
