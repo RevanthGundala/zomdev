@@ -48,8 +48,8 @@ export const getProfile = new aws.lambda.CallbackFunction("getProfile", {
     return {
       statusCode: 200,
       headers: {
-        "Access-Control-Allow-Origin": "http://localhost:3000",
-        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Allow-Origin": "https://fantura.vercel.app",
+        "Access-Control-Allow-Credentials": true,
       },
       body: new Date().toISOString(),
     };

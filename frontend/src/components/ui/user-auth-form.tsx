@@ -54,9 +54,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       response_type: "code",
       scope: "openid",
     });
+    // TODO: Switch to .env
     const loginURL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=641538649125-s3phe3ct5t940moj2mg4svf0n4b1bre4.apps.googleusercontent.com&redirect_uri=https://gaa876jg49.execute-api.us-west-2.amazonaws.com/stage/oauth2/google-callback&response_type=code&scope=openid`;
-    console.log("loginURL", loginURL);
-    //router.push(loginURL);
+    // console.log("loginURL", loginURL);
+    router.push(loginURL);
     setIsLoading(false);
   }
 

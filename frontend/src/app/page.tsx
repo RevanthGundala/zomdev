@@ -43,8 +43,10 @@ export default function Home() {
     try {
       // TODO: Switch to server function
       const response = await fetch(
-        "https://gaa876jg49.execute-api.us-west-2.amazonaws.com/stage" +
-          "/get-profile"
+        "https://gaa876jg49.execute-api.us-west-2.amazonaws.com/stage/get-profile",
+        {
+          credentials: "include",
+        }
       );
       const data = await response.json();
       console.log("data: ", data);

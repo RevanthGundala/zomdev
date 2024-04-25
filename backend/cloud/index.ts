@@ -8,7 +8,7 @@ import { getProfile, loginCallback } from "./lambdas/index";
 const api = new apigateway.RestAPI("api", {
   routes: [
     {
-      path: "/login/callback",
+      path: "/oauth2/google-callback",
       method: "GET",
       eventHandler: loginCallback,
     },
