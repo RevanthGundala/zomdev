@@ -4,7 +4,7 @@ import { APIGatewayProxyEventV2 } from "aws-lambda";
 // A Lambda function to invoke
 export const loginCallback = new aws.lambda.CallbackFunction("loginCallback", {
   callback: async (event: APIGatewayProxyEventV2) => {
-    const url = "https://fantura.vercel.app";
+    const url = "https://fantura.vercel.app/";
 
     const { code } = event.queryStringParameters || {};
     if (!code) {
@@ -36,10 +36,11 @@ export const loginCallback = new aws.lambda.CallbackFunction("loginCallback", {
       });
       // Extract JWT from claims
       const { id_token: jwt } = await response.json();
+      // TODO: Specify domain
       return {
         statusCode: 302,
         headers: {
-          "Set-Cookie": `testCookie=12345; Path=/; Domain=https://gaa876jg49.execute-api.us-west-2.amazonaws.com; SameSite=Lax; HttpOnly; Max-Age=3600;`,
+          "Set-Cookie": `testCookie=6789; Path=/; SameSite=None; Secure; HttpOnly; Max-Age=3600;`,
           Location: url,
         },
       };

@@ -51,7 +51,9 @@ export const getProfile = new aws.lambda.CallbackFunction("getProfile", {
         "Access-Control-Allow-Origin": "https://fantura.vercel.app",
         "Access-Control-Allow-Credentials": true,
       },
-      body: new Date().toISOString(),
+      body: JSON.stringify({
+        timestamp: new Date().toISOString(),
+      }),
     };
   },
   runtime: "nodejs18.x",
