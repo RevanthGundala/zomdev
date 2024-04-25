@@ -14,7 +14,6 @@ export const loginCallback = new aws.lambda.CallbackFunction("loginCallback", {
       };
     }
 
-    // TODO: Move to cloud environment variables for security
     const clientId = process.env.GOOGLE_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
     const redirectUri = process.env.GOOGLE_REDIRECT_URI;
