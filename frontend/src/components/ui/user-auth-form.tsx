@@ -36,7 +36,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     const { epoch } = await client.getLatestSuiSystemState();
     const maxEpoch = Number(epoch) + 2;
     const ephemeralKey = new Ed25519Keypair();
-    const randomness = generateRandomness();
+    // const randomness = generateRandomness();
     // const nonce = generateNonce(
     //   ephemeralKey.getPublicKey(),
     //   maxEpoch,
