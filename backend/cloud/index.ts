@@ -2,7 +2,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as apigateway from "@pulumi/aws-apigateway";
 
-import { getProfile, loginCallback } from "./aws/lambdas/index";
+import { getProfile, oauthGoogleCallback } from "./aws/lambdas/index";
 
 // A REST API to route requests to HTML content and the Lambda function
 const api = new apigateway.RestAPI("api", {
@@ -10,7 +10,7 @@ const api = new apigateway.RestAPI("api", {
     {
       path: "/oauth2/google-callback",
       method: "GET",
-      eventHandler: loginCallback,
+      eventHandler: oauthGoogleCallback,
     },
     {
       path: "/get-profile",

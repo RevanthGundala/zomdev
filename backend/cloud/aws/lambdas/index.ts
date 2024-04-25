@@ -1,4 +1,4 @@
-import { getProfile } from "./getProfile";
-import { loginCallback } from "./loginCallback";
+import { getProfile } from "./get-profile";
+import { oauthGoogleCallback } from "./ouath-callback";
 
-export { getProfile, loginCallback };
+export { getProfile, oauthGoogleCallback };
