@@ -21,10 +21,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     "maxEpoch",
     0
   );
-  const [ephemeralKey, setEphemeralKey, removeEphemeralKey] = useSessionStorage(
-    "ephemeralKey",
-    {}
-  );
+  const [ephemeralKey, setEphemeralKey, removeEphemeralKey] =
+    useSessionStorage<Ed25519Keypair>("ephemeralKey", {} as Ed25519Keypair);
   const [jwtRandomness, setJwtRandomness, removeJwtRandomness] =
     useSessionStorage("jwtRandomness", "");
 
