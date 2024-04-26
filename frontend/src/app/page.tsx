@@ -54,6 +54,7 @@ export default function Home() {
     async function getZkLoginSignature() {
       try {
         // TODO: Switch to server function
+        console.log("ephemeralKey: ", ephemeralKey);
         const ephemeralPublicKey = ephemeralKey.getPublicKey();
 
         const state = {
