@@ -25,68 +25,71 @@ export const getProfile = new aws.lambda.CallbackFunction("getProfile", {
         body: "Cookie not Found",
       };
     const jwt = Cookie.split("=")[1];
-    const state = decodeURIComponent(encodedState);
-    console.log("state", state);
+    const state = JSON.parse(decodeURIComponent(encodedState));
 
-    // //const walletAccessKey = process.env.SHINAMI_WALLET_ACCESS_KEY!;
-    // // TODO:
-    // const walletAccessKey = "1cb2a0622c007218a6c9550f25d07fa6";
-    // const zkw = new ZkWalletClient(walletAccessKey);
-    // const { salt, address: zkLoginUserAddress } =
-    //   await zkw.getOrCreateZkLoginWallet(jwt);
+    console.log("State: ", state);
 
-    // const zkp = new ZkProverClient(walletAccessKey);
+    //const walletAccessKey = process.env.SHINAMI_WALLET_ACCESS_KEY!;
+    // TODO:
+    const walletAccessKey = "1cb2a0622c007218a6c9550f25d07fa6";
+    const zkw = new ZkWalletClient(walletAccessKey);
+    const { salt, address: zkLoginUserAddress } =
+      await zkw.getOrCreateZkLoginWallet(jwt);
 
-    // const { maxEpoch, ephemeralPublicKey, jwtRandomness } = state;
+    const zkp = new ZkProverClient(walletAccessKey);
 
-    // const { zkProof } = await zkp.createZkLoginProof(
-    //   jwt,
-    //   maxEpoch,
-    //   ephemeralPublicKey,
-    //   BigInt(jwtRandomness),
-    //   salt
-    // );
+    const { maxEpoch, ephemeralPublicKey, jwtRandomness } = state;
 
-    // const partialZkLoginSignature = zkProof as PartialZkLoginSignature;
+    console.log("ephemeralPublicKey: ", ephemeralPublicKey);
 
-    // const decodedJwt = jwtDecode<JwtPayload>(jwt);
-    // let { sub, aud } = decodedJwt;
-    // if (!sub || !aud) {
-    //   return {
-    //     statusCode: 400,
-    //     body: "Sub and/or Aud not found in JWT",
-    //   };
-    // }
+    const { zkProof } = await zkp.createZkLoginProof(
+      jwt,
+      maxEpoch,
+      ephemeralPublicKey,
+      BigInt(jwtRandomness),
+      salt
+    );
 
-    // if (typeof aud !== "string") {
-    //   aud = aud[0];
-    // }
-    // const addressSeed = genAddressSeed(salt, "sub", sub, aud).toString();
+    const partialZkLoginSignature = zkProof as PartialZkLoginSignature;
 
-    // const inputs = {
-    //   ...partialZkLoginSignature,
-    //   addressSeed,
-    // };
+    const decodedJwt = jwtDecode<JwtPayload>(jwt);
+    let { sub, aud } = decodedJwt;
+    if (!sub || !aud) {
+      return {
+        statusCode: 400,
+        body: "Sub and/or Aud not found in JWT",
+      };
+    }
 
-    // return {
-    //   statusCode: 200,
-    //   headers: {
-    //     "Access-Control-Allow-Origin": "https://fantura.vercel.app",
-    //     "Access-Control-Allow-Credentials": true,
-    //   },
-    //   body: JSON.stringify({
-    //     zkLoginUserAddress,
-    //     inputs,
-    //   }),
-    // };
+    if (typeof aud !== "string") {
+      aud = aud[0];
+    }
+    const addressSeed = genAddressSeed(salt, "sub", sub, aud).toString();
+
+    const inputs = {
+      ...partialZkLoginSignature,
+      addressSeed,
+    };
+
     return {
       statusCode: 200,
       headers: {
         "Access-Control-Allow-Origin": "https://fantura.vercel.app",
         "Access-Control-Allow-Credentials": true,
       },
-      body: "Hello, World!",
+      body: JSON.stringify({
+        zkLoginUserAddress,
+        inputs,
+      }),
     };
+    // return {
+    //   statusCode: 200,
+    //   headers: {
+    //     "Access-Control-Allow-Origin": "https://fantura.vercel.app",
+    //     "Access-Control-Allow-Credentials": true,
+    //   },
+    //   body: "Hello, World!",
+    // };
   },
   runtime: "nodejs18.x",
 });

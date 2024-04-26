@@ -29,6 +29,8 @@ import ImageSection from "@/components/LandingPage/ImageSection";
 import HeroSection from "@/components/LandingPage/HeroSection";
 import InfoSection from "@/components/LandingPage/InfoSection";
 import { useSessionStorage } from "usehooks-ts";
+import { PublicKey } from "@mysten/sui.js/cryptography";
+import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
 
 export default function Home() {
   const section1 = useRef(null);
@@ -43,10 +45,8 @@ export default function Home() {
     "maxEpoch",
     0
   );
-  const [ephemeralKey, setEphemeralKey, removeEphemeralKey] = useSessionStorage(
-    "ephemeralKey",
-    {}
-  );
+  const [ephemeralKey, setEphemeralKey, removeEphemeralKey] =
+    useSessionStorage<Ed25519Keypair>("ephemeralKey", {} as Ed25519Keypair);
   const [jwtRandomness, setJwtRandomness, removeJwtRandomness] =
     useSessionStorage("jwtRandomness", 0);
 
@@ -54,10 +54,11 @@ export default function Home() {
     async function getZkLoginSignature() {
       try {
         // TODO: Switch to server function
+        const ephemeralPublicKey = ephemeralKey.getPublicKey();
 
         const state = {
           maxEpoch,
-          ephemeralKey,
+          ephemeralPublicKey,
           jwtRandomness,
         };
 

@@ -4,6 +4,7 @@
     "@types/node": "^18"
   },
   "dependencies": {
+    "@mysten/sui.js": "^0.52.0",
     "@mysten/zklogin": "^0.5.2",
     "@pulumi/aws": "^6.0.0",
     "@pulumi/aws-apigateway": "^2.0.0",
