@@ -43,36 +43,37 @@ export default function Home() {
     amount: 0.4,
   });
 
-  useEffect(() => {}, []);
-
-  async function getZkLoginSignature() {
-    try {
-      // TODO: Switch to server function
-      const client = new SuiClient({ url: getFullnodeUrl("testnet") });
-      const { epoch } = await client.getLatestSuiSystemState();
-      const maxEpoch = Number(epoch) + 2;
-      const ephemeralKey = new Ed25519Keypair();
-      const jwtRandomness = generateRandomness();
-      const state = {
-        maxEpoch,
-        ephemeralPublicKey: ephemeralKey.getPublicKey(),
-        jwtRandomness,
-      };
-      const params = new URLSearchParams({
-        state: encodeURIComponent(JSON.stringify(state)),
-      });
-      const response = await fetch(
-        `https://gaa876jg49.execute-api.us-west-2.amazonaws.com/stage/get-profile?${params}`,
-        {
-          credentials: "include",
-        }
-      );
-      const data = await response.json();
-      console.log("data: ", data);
-    } catch (e) {
-      console.log("error: ", e);
+  useEffect(() => {
+    async function getZkLoginSignature() {
+      try {
+        // TODO: Switch to server function
+        const client = new SuiClient({ url: getFullnodeUrl("testnet") });
+        const { epoch } = await client.getLatestSuiSystemState();
+        const maxEpoch = Number(epoch) + 2;
+        const ephemeralKey = new Ed25519Keypair();
+        const jwtRandomness = generateRandomness();
+        const state = {
+          maxEpoch,
+          ephemeralPublicKey: ephemeralKey.getPublicKey(),
+          jwtRandomness,
+        };
+        const params = new URLSearchParams({
+          state: encodeURIComponent(JSON.stringify(state)),
+        });
+        const response = await fetch(
+          `https://gaa876jg49.execute-api.us-west-2.amazonaws.com/stage/get-profile?${params}`,
+          {
+            credentials: "include",
+          }
+        );
+        const data = await response.json();
+        console.log("data: ", data);
+      } catch (e) {
+        console.log("error: ", e);
+      }
     }
-  }
+    getZkLoginSignature();
+  }, []);
 
   return (
     <>
@@ -80,9 +81,6 @@ export default function Home() {
 
       <HeroSection />
       <InfoSection isInView1={isInView1} section1={section1} />
-      <button className="z-100" onClick={getZkLoginSignature}>
-        Get ZkLogin Signature
-      </button>
       {/* <motion.div
         initial={{
           backgroundColor: "#000000",
