@@ -43,12 +43,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     //   maxEpoch,
     //   randomness
     // );
-    const state = {
-      maxEpoch,
-      ephemeralPublicKey: ephemeralKey.getPublicKey(),
-      jwtRandomness,
-    };
-    const encodedState = encodeURIComponent(JSON.stringify(state));
+
     // TODO: switch to .env
     const params = new URLSearchParams({
       client_id:
@@ -57,7 +52,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         "https://gaa876jg49.execute-api.us-west-2.amazonaws.com/stage/oauth2/google-callback",
       response_type: "code",
       scope: "openid",
-      state: encodedState,
     });
     const loginURL = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
     // console.log("loginURL", loginURL);

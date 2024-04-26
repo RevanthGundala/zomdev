@@ -10,6 +10,7 @@
         "@pulumi/awsx": "^2.0.2",
         "@pulumi/pulumi": "^3.113.0",
         "@shinami/clients": "^0.7.3",
+        "jwt-decode": "^4.0.0",
         "typescript": "^5.0.0"
     }
 }

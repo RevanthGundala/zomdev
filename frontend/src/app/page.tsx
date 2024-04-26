@@ -42,6 +42,12 @@ export default function Home() {
   async function getZkLoginSignature() {
     try {
       // TODO: Switch to server function
+      // const state = {
+      //   maxEpoch,
+      //   ephemeralPublicKey: ephemeralKey.getPublicKey(),
+      //   jwtRandomness,
+      // };
+      // const encodedState = encodeURIComponent(JSON.stringify(state));
       const response = await fetch(
         "https://gaa876jg49.execute-api.us-west-2.amazonaws.com/stage/get-profile",
         {
