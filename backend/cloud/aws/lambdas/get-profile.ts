@@ -11,6 +11,7 @@ type PartialZkLoginSignature = Omit<
 
 export const getProfile = new aws.lambda.CallbackFunction("getProfile", {
   callback: async (event: APIGatewayProxyEventV2) => {
+    console.log("Event: ", event);
     // const { Cookie } = event.headers;
     // if (!Cookie)
     //   return {

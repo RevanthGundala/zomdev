@@ -28,6 +28,10 @@ import {
 import ImageSection from "@/components/LandingPage/ImageSection";
 import HeroSection from "@/components/LandingPage/HeroSection";
 import InfoSection from "@/components/LandingPage/InfoSection";
+import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";
+import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
+import { useRouter } from "next/navigation";
+import { generateNonce, generateRandomness } from "@mysten/zklogin";
 
 export default function Home() {
   const section1 = useRef(null);
@@ -39,17 +43,26 @@ export default function Home() {
     amount: 0.4,
   });
 
+  useEffect(() => {}, []);
+
   async function getZkLoginSignature() {
     try {
       // TODO: Switch to server function
-      // const state = {
-      //   maxEpoch,
-      //   ephemeralPublicKey: ephemeralKey.getPublicKey(),
-      //   jwtRandomness,
-      // };
-      // const encodedState = encodeURIComponent(JSON.stringify(state));
+      const client = new SuiClient({ url: getFullnodeUrl("testnet") });
+      const { epoch } = await client.getLatestSuiSystemState();
+      const maxEpoch = Number(epoch) + 2;
+      const ephemeralKey = new Ed25519Keypair();
+      const jwtRandomness = generateRandomness();
+      const state = {
+        maxEpoch,
+        ephemeralPublicKey: ephemeralKey.getPublicKey(),
+        jwtRandomness,
+      };
+      const params = new URLSearchParams({
+        state: encodeURIComponent(JSON.stringify(state)),
+      });
       const response = await fetch(
-        "https://gaa876jg49.execute-api.us-west-2.amazonaws.com/stage/get-profile",
+        `https://gaa876jg49.execute-api.us-west-2.amazonaws.com/stage/get-profile?${params}`,
         {
           credentials: "include",
         }

@@ -34,10 +34,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     setIsLoading(true);
     if (isSignedIn()) return;
     const client = new SuiClient({ url: getFullnodeUrl("testnet") });
-    const { epoch } = await client.getLatestSuiSystemState();
-    const maxEpoch = Number(epoch) + 2;
-    const ephemeralKey = new Ed25519Keypair();
-    const jwtRandomness = generateRandomness();
     // const nonce = generateNonce(
     //   ephemeralKey.getPublicKey(),
     //   maxEpoch,
