@@ -50,7 +50,7 @@ export default function Home() {
   );
   const [ephemeralKey, setEphemeralKey, removeEphemeralKey] = useSessionStorage(
     "ephemeralKey",
-    { keypair: { publicKey: {}, secretKey: {} } }
+    {}
   );
   const [jwtRandomness, setJwtRandomness, removeJwtRandomness] =
     useSessionStorage("jwtRandomness", 0);
@@ -59,22 +59,9 @@ export default function Home() {
     async function getZkLoginSignature() {
       try {
         // TODO: Switch to server function
-
-        // Construct keypair from info to get correct type
-        const keyPair = new Ed25519Keypair({
-          publicKey: new Uint8Array(
-            Object.values(ephemeralKey.keypair.publicKey)
-          ),
-          secretKey: new Uint8Array(
-            Object.values(ephemeralKey.keypair.secretKey)
-          ),
-        } as Ed25519KeypairData);
-
-        const ephemeralPublicKey = keyPair.getPublicKey();
-
         const state = {
           maxEpoch,
-          ephemeralPublicKey,
+          ephemeralKey,
           jwtRandomness,
         };
 

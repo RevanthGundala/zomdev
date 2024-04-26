@@ -3,11 +3,21 @@ import { APIGatewayProxyEventV2 } from "aws-lambda";
 import { ZkWalletClient, ZkProverClient } from "@shinami/clients";
 import { getZkLoginSignature, genAddressSeed } from "@mysten/zklogin";
 import { JwtPayload, jwtDecode } from "jwt-decode";
+import {
+  Ed25519Keypair,
+  Ed25519KeypairData,
+} from "@mysten/sui.js/keypairs/ed25519";
 
 type PartialZkLoginSignature = Omit<
   Parameters<typeof getZkLoginSignature>["0"]["inputs"],
   "addressSeed"
 >;
+
+interface State {
+  maxEpoch: number;
+  ephemeralKey: any;
+  jwtRandomness: string;
+}
 
 export const getProfile = new aws.lambda.CallbackFunction("getProfile", {
   callback: async (event: APIGatewayProxyEventV2) => {
@@ -25,22 +35,29 @@ export const getProfile = new aws.lambda.CallbackFunction("getProfile", {
         body: "Cookie not Found",
       };
     const jwt = Cookie.split("=")[1];
-    const state = JSON.parse(decodeURIComponent(encodedState));
+    const state = JSON.parse(decodeURIComponent(encodedState)) as State;
 
     console.log("State: ", state);
 
-    //const walletAccessKey = process.env.SHINAMI_WALLET_ACCESS_KEY!;
     // TODO:
+    //const walletAccessKey = process.env.SHINAMI_WALLET_ACCESS_KEY!;
     const walletAccessKey = "1cb2a0622c007218a6c9550f25d07fa6";
+
     const zkw = new ZkWalletClient(walletAccessKey);
     const { salt, address: zkLoginUserAddress } =
       await zkw.getOrCreateZkLoginWallet(jwt);
 
     const zkp = new ZkProverClient(walletAccessKey);
 
-    const { maxEpoch, ephemeralPublicKey, jwtRandomness } = state;
+    const { maxEpoch, ephemeralKey, jwtRandomness } = state;
 
-    console.log("ephemeralPublicKey: ", ephemeralPublicKey);
+    // Construct keypair from info to get correct type
+    const keyPair = new Ed25519Keypair({
+      publicKey: new Uint8Array(Object.values(ephemeralKey.keypair.publicKey)),
+      secretKey: new Uint8Array(Object.values(ephemeralKey.keypair.secretKey)),
+    } as Ed25519KeypairData);
+
+    const ephemeralPublicKey = keyPair.getPublicKey();
 
     const { zkProof } = await zkp.createZkLoginProof(
       jwt,
