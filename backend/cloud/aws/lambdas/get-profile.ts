@@ -18,15 +18,15 @@ export const getProfile = new aws.lambda.CallbackFunction("getProfile", {
         body: "State not Found",
       };
     }
-    // const { Cookie } = event.headers;
-    // if (!Cookie)
-    //   return {
-    //     statusCode: 400,
-    //     body: "Cookie not Found",
-    //   };
-    // const jwt = Cookie.split("=")[1];
-    // // TODO:
-    // const state = JSON.parse(Buffer.from(encodedState, "base64").toString());
+    const { Cookie } = event.headers;
+    if (!Cookie)
+      return {
+        statusCode: 400,
+        body: "Cookie not Found",
+      };
+    const jwt = Cookie.split("=")[1];
+    const state = decodeURIComponent(encodedState);
+    console.log("state", state);
 
     // //const walletAccessKey = process.env.SHINAMI_WALLET_ACCESS_KEY!;
     // // TODO:
