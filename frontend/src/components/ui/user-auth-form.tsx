@@ -34,11 +34,15 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     setIsLoading(true);
     if (isSignedIn()) return;
     const client = new SuiClient({ url: getFullnodeUrl("testnet") });
-    // const nonce = generateNonce(
-    //   ephemeralKey.getPublicKey(),
-    //   maxEpoch,
-    //   randomness
-    // );
+    const { epoch } = await client.getLatestSuiSystemState();
+    const maxEpoch = Number(epoch) + 2;
+    const ephemeralKey = new Ed25519Keypair();
+    const randomness = generateRandomness();
+    const nonce = generateNonce(
+      ephemeralKey.getPublicKey(),
+      maxEpoch,
+      randomness
+    );
 
     // TODO: switch to .env
     const params = new URLSearchParams({
@@ -48,6 +52,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         "https://gaa876jg49.execute-api.us-west-2.amazonaws.com/stage/oauth2/google-callback",
       response_type: "code",
       scope: "openid",
+      nonce: nonce,
     });
     const loginURL = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
     // console.log("loginURL", loginURL);

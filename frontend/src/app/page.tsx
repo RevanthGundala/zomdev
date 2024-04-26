@@ -28,6 +28,7 @@ import {
 import ImageSection from "@/components/LandingPage/ImageSection";
 import HeroSection from "@/components/LandingPage/HeroSection";
 import InfoSection from "@/components/LandingPage/InfoSection";
+import { useSessionStorage } from "usehooks-ts";
 
 export default function Home() {
   const section1 = useRef(null);
@@ -38,13 +39,33 @@ export default function Home() {
   const isInView2 = useInView(section2, {
     amount: 0.4,
   });
+  const [maxEpoch, setMaxEpoch, removeMaxEpoch] = useSessionStorage(
+    "maxEpoch",
+    0
+  );
+  const [ephemeralKey, setEphemeralKey, removeEphemeralKey] = useSessionStorage(
+    "ephemeralKey",
+    {}
+  );
+  const [jwtRandomness, setJwtRandomness, removeJwtRandomness] =
+    useSessionStorage("jwtRandomness", 0);
 
   useEffect(() => {
     async function getZkLoginSignature() {
       try {
         // TODO: Switch to server function
+
+        const state = {
+          maxEpoch,
+          ephemeralKey,
+          jwtRandomness,
+        };
+
+        const params = new URLSearchParams({
+          state: encodeURIComponent(JSON.stringify(state)),
+        });
         const response = await fetch(
-          `https://gaa876jg49.execute-api.us-west-2.amazonaws.com/stage/get-profile`,
+          `https://gaa876jg49.execute-api.us-west-2.amazonaws.com/stage/get-profile?${params}`,
           {
             credentials: "include",
           }
