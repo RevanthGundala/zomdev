@@ -12,8 +12,9 @@ type PartialZkLoginSignature = Omit<
 
 // TODO: change return type
 export async function getZkp(state: string): Promise<any> {
-  const { maxEpoch, ephemeralPublicKey, jwtRandomness } =
+  const { maxEpoch, ephemeralKey, jwtRandomness } =
     await deserializeState(state);
+  const ephemeralPublicKey = ephemeralKey.getPublicKey();
   const jwt = cookies().get("jwt")?.value;
   if (!jwt) {
     return {

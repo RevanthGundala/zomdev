@@ -6,9 +6,9 @@ import { redirect } from "next/navigation";
 import { deserializeState } from "./utils";
 
 export async function logIn(state: string) {
-  const { maxEpoch, ephemeralPublicKey, jwtRandomness } =
+  const { maxEpoch, ephemeralKey, jwtRandomness } =
     await deserializeState(state);
-
+  const ephemeralPublicKey = ephemeralKey.getPublicKey();
   const nonce = generateNonce(ephemeralPublicKey, maxEpoch, jwtRandomness);
   //   cookies().set({
   //     name: "nonce",

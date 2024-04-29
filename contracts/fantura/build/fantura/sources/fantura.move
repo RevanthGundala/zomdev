@@ -10,7 +10,7 @@ module fantura::fantura {
         age: u32,
     }
 
-    fun init(ctx: &mut TxContext) {
+    public fun createTeam(ctx: &mut TxContext) {
         transfer::share_object(Fantura {
             id: object::new(ctx),
             name: 0,

@@ -4,6 +4,8 @@ import { createClient } from "@/utils/supabase/client";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Provider, User } from "@supabase/supabase-js";
+import Navbar from "@/components/Navbar";
+import { useSessionStorage } from "usehooks-ts";
 
 type Account = {
   provider: Provider;
@@ -14,6 +16,10 @@ type Account = {
 };
 
 export default function ConnectedAccounts() {
+  const [session, setSession, removeSession] = useSessionStorage(
+    "session",
+    "{}",
+  );
   const [accounts, setAccounts] = useState<Account[]>([
     {
       provider: "discord",
@@ -27,7 +33,7 @@ export default function ConnectedAccounts() {
       scopes: "tweet.read users.read follows.read offline.access",
       img: "./google.png",
       connected: false,
-      supported: false,
+      supported: true,
     },
     {
       provider: "twitch",
@@ -67,7 +73,7 @@ export default function ConnectedAccounts() {
         ...account,
         connected:
           data?.identities.some(
-            (identity) => identity.provider === account.provider
+            (identity) => identity.provider === account.provider,
           ) || false,
       }));
 
@@ -87,7 +93,7 @@ export default function ConnectedAccounts() {
         // queryParams: {
         //   state: "profile",
         // },
-        redirectTo: `${window.location.origin}/api/auth/callback`,
+        redirectTo: `https://fantura.vercel.app/api/auth/callback`,
       },
     });
     if (error) {
@@ -108,7 +114,7 @@ export default function ConnectedAccounts() {
 
     // find the identity
     const identityToDisconnect = data?.identities.find(
-      (identity) => identity.provider === provider
+      (identity) => identity.provider === provider,
     );
     if (!identityToDisconnect) {
       console.error("Identity not found");
@@ -164,16 +170,19 @@ export default function ConnectedAccounts() {
   }
 
   return (
-    <div className="flex flex-col items-center mt-40 space-y-6">
-      <h1 className="text-2xl ">Connected Accounts</h1>
-      <div className="flex flex-col border-l border-r border-b rounded-lg w-1/4 h-1/2 shadow-md">
-        <div className="bg-gray-200 rounded-t-lg border-b border-gray-200 py-2 px-4">
-          Search
+    <>
+      <Navbar isConnected={session !== "{}"} />
+      <div className="flex flex-col items-center mt-40 space-y-6">
+        <h1 className="text-2xl ">Connected Accounts</h1>
+        <div className="flex flex-col border-l border-r border-b rounded-lg w-1/4 h-1/2 shadow-md">
+          <div className="bg-gray-200 rounded-t-lg border-b border-gray-200 py-2 px-4">
+            Search
+          </div>
+          {accounts.map((account, i) => (
+            <AccountDisplay key={i} account={account} />
+          ))}
         </div>
-        {accounts.map((account, i) => (
-          <AccountDisplay key={i} account={account} />
-        ))}
       </div>
-    </div>
+    </>
   );
 }

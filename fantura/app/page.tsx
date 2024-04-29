@@ -9,12 +9,13 @@ import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
 import { getZkp } from "./actions/zkp";
 import { useEffect } from "react";
 import { unstable_noStore as noStore } from "next/cache";
+import { createTeam } from "./actions/calls/createTeam";
 
 export default function Home() {
   const [state, setState, removeState] = useSessionStorage("state", "{}");
   const [session, setSession, removeSession] = useSessionStorage(
     "session",
-    "{}"
+    "{}",
   );
 
   useEffect(() => {
@@ -40,6 +41,13 @@ export default function Home() {
   return (
     <>
       <Navbar isConnected={session !== "{}"} />
+      <div className="min-h-screen bg-black"></div>
+      <button
+        className="bg-black text-white"
+        onClick={async () => await createTeam(state, session)}
+      >
+        Create Team
+      </button>
       {/* <HeroSection /> */}
       {/* <InfoSection />
       <SignUp />
