@@ -13,6 +13,10 @@ import {
 } from "@mysten/sui.js/keypairs/ed25519";
 import { getZkLoginSignature } from "@mysten/zklogin";
 import { SerializedSignature } from "@mysten/sui.js/cryptography";
+import {
+  GasStationClient,
+  buildGaslessTransactionBytes,
+} from "@shinami/clients";
 
 interface State {
   maxEpoch: number;
@@ -46,23 +50,41 @@ export async function newZkLoginTxb(
   session: string,
 ): Promise<TransactionBlock> {
   const { zkLoginUserAddress } = await deserializeSession(session);
-  console.log("zkLoginUserAddress: ", zkLoginUserAddress);
   const txb = new TransactionBlock();
   txb.setSender(zkLoginUserAddress);
   return txb;
 }
 
 export async function executeZkLoginTxb(
-  txb: TransactionBlock,
+  gaslessPayloadBase64: string,
+  client: SuiClient,
   state: string,
   session: string,
   options?: SuiTransactionBlockResponseOptions | null | undefined,
 ): Promise<SuiTransactionBlockResponse> {
-  const { inputs } = await deserializeSession(session);
+  const { inputs, zkLoginUserAddress } = await deserializeSession(session);
   const { maxEpoch, ephemeralKey } = await deserializeState(state);
-  const client = new SuiClient({ url: getFullnodeUrl("testnet") });
-  const { bytes, signature: userSignature } = await txb.sign({
-    client,
+  const gasStationClient = new GasStationClient(
+    process.env.NEXT_PUBLIC_GAS_ACCESS_KEY!,
+  );
+  const sponsoredResponse = await gasStationClient.sponsorTransactionBlock(
+    gaslessPayloadBase64,
+    zkLoginUserAddress,
+  );
+
+  const sponsoredStatus =
+    await gasStationClient.getSponsoredTransactionBlockStatus(
+      sponsoredResponse.txDigest,
+    );
+
+  if (sponsoredStatus !== "IN_FLIGHT") {
+    // TODO: Refund the gas station
+    console.log("Spnsored Tx failed");
+  }
+
+  const { signature: userSignature } = await TransactionBlock.from(
+    sponsoredResponse.txBytes,
+  ).sign({
     signer: ephemeralKey,
   });
   const zkLoginSignature: SerializedSignature = getZkLoginSignature({
@@ -71,9 +93,10 @@ export async function executeZkLoginTxb(
     userSignature,
   });
   const tx = await client.executeTransactionBlock({
-    transactionBlock: bytes,
-    signature: zkLoginSignature,
+    transactionBlock: sponsoredResponse.txBytes,
+    signature: [sponsoredResponse.signature, zkLoginSignature],
     options: options,
+    requestType: "WaitForLocalExecution",
   });
   return tx;
 }
