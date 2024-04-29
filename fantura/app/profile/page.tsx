@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Provider, User } from "@supabase/supabase-js";
 
@@ -55,22 +55,20 @@ export default function ConnectedAccounts() {
 
   useEffect(() => {
     async function fetchUser() {
-      const {
-        data: { user },
-        error,
-      } = await supabase.auth.getUser();
-      if (error) {
-        console.error("Error getting user: ", error);
-        return redirect("/login");
+      const { data, error: identityError } =
+        await supabase.auth.getUserIdentities();
+      if (identityError) {
+        console.error("Error getting identities: ", identityError);
+        return;
       }
-      if (!user) {
-        console.error("User not found");
-        return redirect("/login");
-      }
+
       // Map through accounts to create a new array with updated connection statuses
       const updatedAccounts = accounts.map((account) => ({
         ...account,
-        connected: user?.app_metadata.providers.includes(account.provider),
+        connected:
+          data?.identities.some(
+            (identity) => identity.provider === account.provider
+          ) || false,
       }));
 
       setAccounts(updatedAccounts); // Use the setter function to update the state
@@ -110,7 +108,7 @@ export default function ConnectedAccounts() {
 
     // find the identity
     const identityToDisconnect = data?.identities.find(
-      (identity) => identity.provider === provider,
+      (identity) => identity.provider === provider
     );
     if (!identityToDisconnect) {
       console.error("Identity not found");

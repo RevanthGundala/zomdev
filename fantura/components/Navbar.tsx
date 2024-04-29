@@ -49,9 +49,16 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export default function Navbar() {
-  const isConnected = false;
-  async function signOut() {}
+import { logOut } from "../app/actions/logOut";
+import { redirect } from "next/navigation";
+import { useSessionStorage } from "usehooks-ts";
+
+export default function Navbar({ isConnected }: { isConnected: boolean }) {
+  const [session, setSession, removeSession] = useSessionStorage(
+    "session",
+    "{}"
+  );
+  const [state, setState, removeState] = useSessionStorage("state", "{}");
   return (
     <NavigationMenu className="min-w-full fixed top-0 z-50 bg-white">
       <NavigationMenuList className="flex space-x-4 px-20 py-8 items-center">
@@ -127,7 +134,15 @@ export default function Navbar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <LogOut className="mr-2 h-4 w-4" />
-                  <button onClick={signOut}>Log out</button>
+                  <button
+                    onClick={async () => {
+                      removeSession();
+                      removeState();
+                      await logOut();
+                    }}
+                  >
+                    Log out
+                  </button>
                   {/* <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut> */}
                 </DropdownMenuItem>
               </>

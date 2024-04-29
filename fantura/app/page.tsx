@@ -7,38 +7,22 @@ import InfoSection from "@/components/LandingPage/InfoSection";
 import { useSessionStorage } from "usehooks-ts";
 import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
 import { getZkp } from "./actions/zkp";
-import { createClient } from "@/utils/supabase/server";
-import { cookies } from "next/headers";
 import { useEffect } from "react";
-
-interface State {
-  maxEpoch: number;
-  ephemeralKey: Ed25519Keypair;
-  jwtRandomness: string;
-}
+import { unstable_noStore as noStore } from "next/cache";
 
 export default function Home() {
   const [state, setState, removeState] = useSessionStorage("state", "{}");
-
   const [session, setSession, removeSession] = useSessionStorage(
     "session",
     "{}"
   );
 
-  // const supabase = createClient();
-  // const jwt = cookies().get("jwt")?.value;
-  // const res = await supabase.auth.signInWithIdToken({
-  //   provider: "google",
-  //   token: jwt ?? "",
-  // });
-  // console.log("Res: ", res);
-
   useEffect(() => {
-    // Check if session exists
-    if (session) return;
+    // TODO: Check if session exists - Need to refetch when signature is expired
+    if (session !== "{}") return;
 
-    const decodedState = JSON.parse(state) as State;
-    getZkp(decodedState)
+    noStore();
+    getZkp(state)
       .then((res) => {
         const { data, error } = res;
         if (error) {
@@ -46,16 +30,16 @@ export default function Home() {
           return;
         }
         console.log("Data: ", data);
-        setSession(data);
+        const { zkLoginUserAddress, inputs } = data;
+        setSession(JSON.stringify({ zkLoginUserAddress, inputs }));
       })
       .catch((e) => console.log(e));
   }, []);
 
-  async function signOut() {}
   async function signUpUser() {}
   return (
     <>
-      <Navbar />
+      <Navbar isConnected={session !== "{}"} />
       {/* <HeroSection /> */}
       {/* <InfoSection />
       <SignUp />

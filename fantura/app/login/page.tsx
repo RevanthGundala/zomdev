@@ -13,35 +13,26 @@ import { generateNonce, generateRandomness } from "@mysten/zklogin";
 import { useSessionStorage } from "usehooks-ts";
 import { createClient } from "@/utils/supabase/client";
 import BackButton from "@/components/ui/back-button";
+import { unstable_noStore as noStore } from "next/cache";
+
+import { logIn } from "../actions/logIn";
 
 export default function Login() {
   const [state, setState, removeState] = useSessionStorage("state", "{}");
-  const router = useRouter();
   async function signIn() {
+    noStore();
     const client = new SuiClient({ url: getFullnodeUrl("testnet") });
     const { epoch } = await client.getLatestSuiSystemState();
     const maxEpoch = Number(epoch) + 2;
     const ephemeralKey = new Ed25519Keypair();
     const jwtRandomness = generateRandomness();
-
-    setState(JSON.stringify({ maxEpoch, ephemeralKey, jwtRandomness }));
-
-    const nonce = generateNonce(
-      ephemeralKey.getPublicKey(),
+    const encodedState = JSON.stringify({
       maxEpoch,
-      jwtRandomness
-    );
-
-    const params = new URLSearchParams({
-      client_id:
-        "641538649125-s3phe3ct5t940moj2mg4svf0n4b1bre4.apps.googleusercontent.com",
-      redirect_uri: "http://localhost:3000/api/auth/google-callback",
-      response_type: "code",
-      scope: "openid",
-      nonce: nonce,
+      ephemeralKey,
+      jwtRandomness,
     });
-    const loginURL = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
-    router.push(loginURL);
+    setState(encodedState);
+    await logIn(encodedState);
   }
   return (
     <>
