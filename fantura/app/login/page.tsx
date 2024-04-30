@@ -7,16 +7,13 @@ import { UserAuthForm } from "../../components/ui/user-auth-form";
 import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";
 import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
 import { generateRandomness } from "@mysten/zklogin";
-import { useSessionStorage } from "usehooks-ts";
 import BackButton from "@/components/ui/back-button";
-import { unstable_noStore as noStore } from "next/cache";
-
 import { logIn } from "../actions/auth/logIn";
+import { useZkLoginState } from "@/utils/contexts/zkLoginState";
 
 export default function Login() {
-  const [state, setState, removeState] = useSessionStorage("state", "{}");
+  const { setZkLoginState } = useZkLoginState();
   async function signIn() {
-    noStore();
     const client = new SuiClient({ url: getFullnodeUrl("testnet") });
     const { epoch } = await client.getLatestSuiSystemState();
     const maxEpoch = Number(epoch) + 2;
@@ -27,7 +24,7 @@ export default function Login() {
       ephemeralKey,
       jwtRandomness,
     });
-    setState(encodedState);
+    setZkLoginState(encodedState);
     await logIn(encodedState);
   }
   return (

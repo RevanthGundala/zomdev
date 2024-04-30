@@ -4,7 +4,7 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 import Link from "next/link";
-import { NAME } from "@/lib/utils";
+import { NAME } from "../utils/constants";
 
 export default function Footer() {
   return (

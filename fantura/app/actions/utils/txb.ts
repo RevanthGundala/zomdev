@@ -10,15 +10,20 @@ import { getZkLoginSignature } from "@mysten/zklogin";
 import { SerializedSignature } from "@mysten/sui.js/cryptography";
 import { GasStationClient } from "@shinami/clients";
 
-import { deserializeSession, deserializeState } from "./serde";
+import { deserializeZkLoginSession, deserializeZkLoginState } from "./serde";
 
 export async function newZkLoginTxb(
   session: string,
 ): Promise<TransactionBlock> {
-  const { zkLoginUserAddress } = await deserializeSession(session);
-  const txb = new TransactionBlock();
-  txb.setSender(zkLoginUserAddress);
-  return txb;
+  try {
+    const { zkLoginUserAddress } = await deserializeZkLoginSession(session);
+    const txb = new TransactionBlock();
+    txb.setSender(zkLoginUserAddress);
+    return txb;
+  } catch (e) {
+    console.log("Error: ", e);
+    throw new Error("Failed to create new zkLoginTxb");
+  }
 }
 
 export async function executeZkLoginTxb(
@@ -28,41 +33,49 @@ export async function executeZkLoginTxb(
   session: string,
   options?: SuiTransactionBlockResponseOptions | null | undefined,
 ): Promise<SuiTransactionBlockResponse> {
-  const { inputs, zkLoginUserAddress } = await deserializeSession(session);
-  const { maxEpoch, ephemeralKey } = await deserializeState(state);
-  const gasStationClient = new GasStationClient(
-    process.env.NEXT_PUBLIC_GAS_ACCESS_KEY!,
-  );
-  const sponsoredResponse = await gasStationClient.sponsorTransactionBlock(
-    gaslessPayloadBase64,
-    zkLoginUserAddress,
-  );
+  try {
+    const { zkLoginUserAddress, inputs } =
+      await deserializeZkLoginSession(session);
+    const { maxEpoch, ephemeralKey } = await deserializeZkLoginState(state);
 
-  const sponsoredStatus =
-    await gasStationClient.getSponsoredTransactionBlockStatus(
-      sponsoredResponse.txDigest,
+    const gasStationClient = new GasStationClient(
+      process.env.NEXT_PUBLIC_GAS_ACCESS_KEY!,
+    );
+    const sponsoredResponse = await gasStationClient.sponsorTransactionBlock(
+      gaslessPayloadBase64,
+      zkLoginUserAddress,
     );
 
-  if (sponsoredStatus !== "IN_FLIGHT") {
-    // TODO: Refund the gas station
-    console.log("Spnsored Tx failed");
-  }
+    const sponsoredStatus =
+      await gasStationClient.getSponsoredTransactionBlockStatus(
+        sponsoredResponse.txDigest,
+      );
 
-  const { signature: userSignature } = await TransactionBlock.from(
-    sponsoredResponse.txBytes,
-  ).sign({
-    signer: ephemeralKey,
-  });
-  const zkLoginSignature: SerializedSignature = getZkLoginSignature({
-    inputs,
-    maxEpoch,
-    userSignature,
-  });
-  const tx = await client.executeTransactionBlock({
-    transactionBlock: sponsoredResponse.txBytes,
-    signature: [sponsoredResponse.signature, zkLoginSignature],
-    options: options,
-    requestType: "WaitForLocalExecution",
-  });
-  return tx;
+    if (sponsoredStatus !== "IN_FLIGHT") {
+      // TODO: Refund the gas station
+      console.log("Sponsored Tx failed");
+    }
+
+    const { signature: userSignature } = await TransactionBlock.from(
+      sponsoredResponse.txBytes,
+    ).sign({
+      signer: ephemeralKey,
+    });
+
+    const zkLoginSignature: SerializedSignature = getZkLoginSignature({
+      inputs,
+      maxEpoch,
+      userSignature,
+    });
+    const tx = await client.executeTransactionBlock({
+      transactionBlock: sponsoredResponse.txBytes,
+      signature: [sponsoredResponse.signature, zkLoginSignature],
+      options: options,
+      requestType: "WaitForLocalExecution",
+    });
+    return tx;
+  } catch (e) {
+    console.log("Error: ", e);
+    throw new Error("Failed to execute zkLoginTxb");
+  }
 }

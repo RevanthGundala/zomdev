@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import SearchBar from "./SearchBar";
 import {
@@ -20,25 +19,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  NavigationMenuContent,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { logOut } from "../app/actions/auth/logOut";
-import { useSessionStorage } from "usehooks-ts";
+import { useZkLoginSession } from "@/utils/contexts/zkLoginSession";
+import { useZkLoginState } from "@/utils/contexts/zkLoginState";
 
 export default function Navbar() {
-  const [session, setSession, removeSession] = useSessionStorage(
-    "session",
-    "{}",
-  );
-  const [state, setState, removeState] = useSessionStorage("state", "{}");
-  const [isConnected, setIsConnected] = useState(false);
-  useEffect(() => {
-    if (session !== "{}") setIsConnected(true);
-  }, []);
+  const { removeZkLoginSession, zkLoginSessionExists } = useZkLoginSession();
+  const { removeZkLoginState } = useZkLoginState();
   return (
     <NavigationMenu className="min-w-full fixed top-0 z-50 bg-white">
       <NavigationMenuList className="flex space-x-6 px-20 py-10 items-center">
@@ -93,7 +82,7 @@ export default function Navbar() {
           <DropdownMenuContent className="w-56">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {isConnected ? (
+            {zkLoginSessionExists ? (
               <>
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
@@ -108,8 +97,8 @@ export default function Navbar() {
                   <LogOut className="mr-2 h-4 w-4" />
                   <button
                     onClick={async () => {
-                      removeSession();
-                      removeState();
+                      removeZkLoginSession();
+                      removeZkLoginState();
                       await logOut();
                     }}
                   >

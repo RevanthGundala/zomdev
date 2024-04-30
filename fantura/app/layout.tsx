@@ -1,7 +1,9 @@
-import { cn } from "@/lib/utils";
+import { cn } from "../utils/shadcn-ui";
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
+import { ZkLoginSessionContextProvider } from "@/utils/contexts/zkLoginSession";
+import { ZkLoginStateContextProvider } from "@/utils/contexts/zkLoginState";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -24,16 +26,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head />
-      <body
-        className={cn(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable,
-        )}
-      >
-        {children}
-      </body>
-    </html>
+    <ZkLoginStateContextProvider>
+      <ZkLoginSessionContextProvider>
+        <html lang="en" suppressHydrationWarning>
+          <head />
+          <body
+            className={cn(
+              "min-h-screen bg-background font-sans antialiased",
+              fontSans.variable,
+            )}
+          >
+            {children}
+          </body>
+        </html>
+      </ZkLoginSessionContextProvider>
+    </ZkLoginStateContextProvider>
   );
 }

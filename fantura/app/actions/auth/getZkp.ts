@@ -3,17 +3,24 @@ import { ZkWalletClient, ZkProverClient } from "@shinami/clients";
 import { getZkLoginSignature, genAddressSeed } from "@mysten/zklogin";
 import { JwtPayload, jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
-import { deserializeState } from "../utils/serde";
+import { deserializeZkLoginState } from "../utils/serde";
 
 type PartialZkLoginSignature = Omit<
   Parameters<typeof getZkLoginSignature>["0"]["inputs"],
   "addressSeed"
 >;
 
-// TODO: change return type
-export async function getZkp(state: string): Promise<any> {
+type ZkLoginSession = {
+  data: {
+    zkLoginUserAddress: string;
+    inputs: PartialZkLoginSignature;
+  } | null;
+  error: string | null;
+};
+
+export async function getZkp(state: string): Promise<ZkLoginSession> {
   const { maxEpoch, ephemeralKey, jwtRandomness } =
-    await deserializeState(state);
+    await deserializeZkLoginState(state);
   const ephemeralPublicKey = ephemeralKey.getPublicKey();
   const jwt = cookies().get("jwt")?.value;
   if (!jwt) {
@@ -63,9 +70,7 @@ export async function getZkp(state: string): Promise<any> {
     };
   }
 
-  if (typeof aud !== "string") {
-    aud = aud[0];
-  }
+  if (typeof aud !== "string") aud = aud[0];
 
   const addressSeed = genAddressSeed(userSalt, "sub", sub, aud).toString();
 
