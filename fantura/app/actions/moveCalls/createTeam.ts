@@ -1,6 +1,6 @@
 "use server";
 
-import { newZkLoginTxb, executeZkLoginTxb } from "../utils";
+import { newZkLoginTxb, executeZkLoginTxb } from "../utils/txb";
 import PACKAGE_ID from "../../../deployed_objects.json";
 import { buildGaslessTransactionBytes } from "@shinami/clients";
 import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";

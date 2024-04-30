@@ -3,19 +3,15 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
 import { UserAuthForm } from "../../components/ui/user-auth-form";
 import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";
 import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
-import { redirect, useRouter } from "next/navigation";
-import { generateNonce, generateRandomness } from "@mysten/zklogin";
+import { generateRandomness } from "@mysten/zklogin";
 import { useSessionStorage } from "usehooks-ts";
-import { createClient } from "@/utils/supabase/client";
 import BackButton from "@/components/ui/back-button";
 import { unstable_noStore as noStore } from "next/cache";
 
-import { logIn } from "../actions/logIn";
+import { logIn } from "../actions/auth/logIn";
 
 export default function Login() {
   const [state, setState, removeState] = useSessionStorage("state", "{}");

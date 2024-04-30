@@ -1,188 +1,104 @@
-"use client";
+/**
+ * v0 by Vercel.
+ * @see https://v0.dev/t/MeSpDnKyjpf
+ * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
+ */
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/utils/supabase/client";
-import { redirect, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Provider, User } from "@supabase/supabase-js";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { CardContent, Card, CardHeader } from "@/components/ui/card";
+import { RadioGroup } from "@/components/ui/radio-group";
 import Navbar from "@/components/Navbar";
-import { useSessionStorage } from "usehooks-ts";
+import Footer from "@/components/Footer";
+import ConnectedAccounts from "./ConnectedAccounts";
+import { getAuthProfile } from "../actions/profile/getAuthProfile";
+import Error from "./error";
 
-type Account = {
-  provider: Provider;
-  scopes: string;
-  img: string;
-  connected: boolean;
-  supported: boolean;
-};
-
-export default function ConnectedAccounts() {
-  const [session, setSession, removeSession] = useSessionStorage(
-    "session",
-    "{}",
-  );
-  const [accounts, setAccounts] = useState<Account[]>([
-    {
-      provider: "discord",
-      scopes: "openid",
-      img: "./google.png",
-      connected: false,
-      supported: true,
-    },
-    {
-      provider: "twitter",
-      scopes: "tweet.read users.read follows.read offline.access",
-      img: "./google.png",
-      connected: false,
-      supported: true,
-    },
-    {
-      provider: "twitch",
-      scopes: "openid",
-      img: "./google.png",
-      connected: false,
-      supported: false,
-    },
-    {
-      provider: "facebook",
-      scopes: "openid",
-      img: "./google.png",
-      connected: false,
-      supported: false,
-    },
-    {
-      provider: "spotify",
-      scopes: "openid",
-      img: "./google.png",
-      connected: false,
-      supported: false,
-    },
-  ]);
-  const supabase = createClient();
-
-  useEffect(() => {
-    async function fetchUser() {
-      const { data, error: identityError } =
-        await supabase.auth.getUserIdentities();
-      if (identityError) {
-        console.error("Error getting identities: ", identityError);
-        return;
-      }
-
-      // Map through accounts to create a new array with updated connection statuses
-      const updatedAccounts = accounts.map((account) => ({
-        ...account,
-        connected:
-          data?.identities.some(
-            (identity) => identity.provider === account.provider,
-          ) || false,
-      }));
-
-      setAccounts(updatedAccounts); // Use the setter function to update the state
-    }
-
-    fetchUser();
-  }, []);
-
-  async function connect(provider: Provider, scopes: string) {
-    console.log("Connecting: ", provider);
-    const { data, error } = await supabase.auth.linkIdentity({
-      provider: provider,
-      options: {
-        scopes: scopes,
-        // TODO: Supabase bug: State parameter not working as intended
-        // queryParams: {
-        //   state: "profile",
-        // },
-        redirectTo: `https://fantura.vercel.app/api/auth/callback`,
-      },
-    });
-    if (error) {
-      console.error("Error signing in: ", error);
-    }
-    console.log("data: ", data);
-  }
-
-  async function disconnect(provider: Provider) {
-    console.log("Disconnecting: ", provider);
-    // Check if they are actually connected
-    const { data, error: identityError } =
-      await supabase.auth.getUserIdentities();
-    if (identityError) {
-      console.error("Error getting identities: ", identityError);
-      return;
-    }
-
-    // find the identity
-    const identityToDisconnect = data?.identities.find(
-      (identity) => identity.provider === provider,
-    );
-    if (!identityToDisconnect) {
-      console.error("Identity not found");
-      return;
-    }
-
-    // unlink the identity
-    const { error } = await supabase.auth.unlinkIdentity(identityToDisconnect);
-    if (error) {
-      console.error("Error signing out: ", error);
-    }
-
-    // Update state
-    const updatedAccounts = accounts.map((account) => ({
-      ...account,
-      connected: account.connected && account.provider !== provider,
-    }));
-
-    setAccounts(updatedAccounts);
-  }
-
-  function AccountDisplay({ account }: { account: Account }) {
-    const { provider, scopes, img, connected, supported } = account;
-
-    return (
-      <div className="flex items-center border-b border-gray-200 px-2 py-2">
-        <div className="flex flex-1 space-x-4">
-          <img src={img} alt={provider} className="h-6 w-6 rounded-full" />
-          <span>
-            {provider.charAt(0).toUpperCase() + provider.substring(1)}
-          </span>
-        </div>
-        <div>
-          {connected ? (
-            <button
-              className="rounded-lg min-w-fit px-4 border-2 py-1 border-red-200 hover:border-red-400 hover:bg-red-200"
-              onClick={() => disconnect(provider)}
-            >
-              Disconnect
-            </button>
-          ) : (
-            <button
-              className="rounded-lg min-w-fit px-4 border-2 py-1 border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
-              onClick={() => connect(provider, scopes)}
-              disabled={!supported}
-            >
-              {supported ? "Connect" : "Coming Soon"}
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  }
+export default async function Profile() {
+  // const { data, error } = await getAuthProfile();
 
   return (
-    <>
-      <Navbar isConnected={session !== "{}"} />
-      <div className="flex flex-col items-center mt-40 space-y-6">
-        <h1 className="text-2xl ">Connected Accounts</h1>
-        <div className="flex flex-col border-l border-r border-b rounded-lg w-1/4 h-1/2 shadow-md">
-          <div className="bg-gray-200 rounded-t-lg border-b border-gray-200 py-2 px-4">
-            Search
+    <div>
+      <Navbar />
+      {/* <ErrorBoundary fallback={<Error />} */}
+      <div className="space-y-6 px-20 mb-10 mt-40 min-h-screen">
+        {/* <header className="space-y-2 py-5">
+          <div className="flex items-center space-x-3">
+            <img
+              alt="Avatar"
+              className="rounded-full"
+              height="96"
+              src="/placeholder.svg"
+              style={{
+                aspectRatio: "96/96",
+                objectFit: "cover",
+              }}
+              width="96"
+            />
+            <div className="space-y-1">
+              <h1 className="text-2xl font-bold">Meadow Richardson</h1>
+              <Button size="sm">Change photo</Button>
+            </div>
           </div>
-          {accounts.map((account, i) => (
-            <AccountDisplay key={i} account={account} />
-          ))}
+        </header> */}
+        <header className="text-4xl font-bold px-2">Profile</header>
+        <div className="space-y-8">
+          <Card>
+            <CardContent className="space-y-6 py-5">
+              <div className="space-y-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  defaultValue="Meadow Richardson"
+                  id="name"
+                  placeholder="E.g. Jane Doe"
+                  disabled
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  placeholder="E.g. jane@example.com"
+                  disabled
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Biography</Label>
+                <Textarea
+                  className="mt-1"
+                  id="bio"
+                  placeholder="Enter your bio"
+                  style={{
+                    minHeight: "100px",
+                  }}
+                />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <div>Language</div>
+              <div>Choose your preferred language</div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <RadioGroup defaultValue="en" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <div className="text-2xl">Connected Accounts</div>
+            </CardHeader>
+            <ConnectedAccounts />
+          </Card>
+        </div>
+        <div className="pt-6">
+          <Button>Save</Button>
         </div>
       </div>
-    </>
+      <Footer />
+    </div>
   );
 }

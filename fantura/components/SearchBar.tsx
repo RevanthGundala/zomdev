@@ -5,8 +5,10 @@
  */
 "use client";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 export default function SearchBar() {
+  const router = useRouter();
   return (
     <div className="relative w-full max-w-[600px] shadow-sm">
       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -16,6 +18,9 @@ export default function SearchBar() {
         className="block w-full p-6 pl-10 text-lg text-gray-900 rounded-md bg-gray-50 focus:outline-none focus:shadow-md"
         placeholder="Search..."
         type="search"
+        onSubmit={(value) => {
+          router.push(`${origin}/team/${value}`);
+        }}
       />
     </div>
   );
