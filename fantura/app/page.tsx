@@ -7,7 +7,7 @@ import InfoSection from "@/components/LandingPage/InfoSection";
 import { useZkp } from "@/utils/hooks/useZkp";
 
 export default function Home() {
-  const { isLoading, error } = useZkp();
+  // const { isLoading, error } = useZkp();
 
   return (
     <>

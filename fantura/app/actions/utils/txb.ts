@@ -38,9 +38,7 @@ export async function executeZkLoginTxb(
       await deserializeZkLoginSession(session);
     const { maxEpoch, ephemeralKey } = await deserializeZkLoginState(state);
 
-    const gasStationClient = new GasStationClient(
-      process.env.NEXT_PUBLIC_GAS_ACCESS_KEY!,
-    );
+    const gasStationClient = new GasStationClient(process.env.GAS_ACCESS_KEY!);
     const sponsoredResponse = await gasStationClient.sponsorTransactionBlock(
       gaslessPayloadBase64,
       zkLoginUserAddress,

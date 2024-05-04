@@ -16,6 +16,7 @@
     "@shinami/clients": "^0.7.3",
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "latest",
+    "@typeform/embed-react": "^3.17.0",
     "autoprefixer": "10.4.17",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

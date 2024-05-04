@@ -9,7 +9,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, LogIn, BookHeart } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +26,7 @@ import { useZkLoginSession } from "@/utils/contexts/zkLoginSession";
 import { useZkLoginState } from "@/utils/contexts/zkLoginState";
 
 export default function Navbar() {
-  const { removeZkLoginSession, zkLoginSessionExists } = useZkLoginSession();
+  const { removeZkLoginSession } = useZkLoginSession();
   const { removeZkLoginState } = useZkLoginState();
   return (
     <NavigationMenu className="min-w-full fixed top-0 z-50 bg-white">
@@ -82,15 +82,18 @@ export default function Navbar() {
           <DropdownMenuContent className="w-56">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {zkLoginSessionExists ? (
+            {/* TODO: */}
+            {true ? (
               <>
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
                     <User className="mr-2 h-4 w-4" />
                     <Link href="/profile">Profile</Link>
-                    {/* <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut> */}
                   </DropdownMenuItem>
-                  {/* Rest of the menu items that are commented out */}
+                  <DropdownMenuItem>
+                    <BookHeart className="mr-2 h-4 w-4" />
+                    <Link href="/bounties">Bounties</Link>
+                  </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
@@ -108,7 +111,7 @@ export default function Navbar() {
               </>
             ) : (
               <DropdownMenuItem>
-                <LogOut className="mr-2 h-4 w-4" />
+                <LogIn className="mr-2 h-4 w-4" />
                 <Link href="/login">Log In</Link>
               </DropdownMenuItem>
             )}

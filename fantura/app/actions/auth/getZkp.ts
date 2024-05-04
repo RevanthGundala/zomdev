@@ -30,8 +30,8 @@ export async function getZkp(state: string): Promise<ZkLoginSession> {
     };
   }
 
-  const zkw = new ZkWalletClient(process.env.NEXT_PUBLIC_WALLET_ACCESS_KEY!);
-  const zkp = new ZkProverClient(process.env.NEXT_PUBLIC_WALLET_ACCESS_KEY!);
+  const zkw = new ZkWalletClient(process.env.WALLET_ACCESS_KEY!);
+  const zkp = new ZkProverClient(process.env.WALLET_ACCESS_KEY!);
 
   let userSalt, zkLoginUserAddress;
   try {

@@ -36,12 +36,12 @@ export async function contactUs(formData: FormData) {
   }
 
   const { name, email, subject, message } = validatedFields.data;
-  const resend = new Resend(process.env.NEXT_PUBLIC_RESEND_API_KEY!);
+  const resend = new Resend(process.env.RESEND_API_KEY!);
 
   // Send email
   const { data, error } = await resend.emails.send({
     from: `${name} <${email}>`,
-    to: [process.env.NEXT_PUBLIC_EMAIL!],
+    to: [process.env.EMAIL!],
     subject: subject,
     react: message,
   });

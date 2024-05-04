@@ -8,7 +8,7 @@ import { unstable_noStore as noStore } from "next/cache";
 
 export function useZkp() {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const { zkLoginState } = useZkLoginState();
   const { setZkLoginSession, zkLoginSessionExists } = useZkLoginSession();
 
@@ -26,6 +26,7 @@ export function useZkp() {
           setError(error);
           return;
         }
+        // We know data is not null
         console.log("Data: ", data);
         const { zkLoginUserAddress, inputs } = data;
         setZkLoginSession(JSON.stringify({ zkLoginUserAddress, inputs }));

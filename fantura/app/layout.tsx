@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <ZkLoginStateContextProvider>
       <ZkLoginSessionContextProvider>
-        <html lang="en" suppressHydrationWarning>
+        <html lang="en" suppressHydrationWarning className="overflow-y-auto">
           <head />
           <body
             className={cn(
