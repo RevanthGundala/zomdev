@@ -11,9 +11,9 @@ export async function GET(request: Request) {
   const origin = requestUrl.origin;
 
   if (code) {
-    const clientId = process.env.GOOGLE_CLIENT_ID!;
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET!;
-    const redirectUri = process.env.GOOGLE_REDIRECT_URI!;
+    const redirectUri = process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!;
 
     const body = {
       grant_type: "authorization_code",
@@ -43,17 +43,17 @@ export async function GET(request: Request) {
       });
 
       // Set main session for supabase auth linking
-      // const supabase = createClient();
-      // const decodedjwt = jwtDecode(id_token) as any;
-      // const { error } = await supabase.auth.signInWithIdToken({
-      //   provider: "google",
-      //   token: id_token,
-      //   access_token: access_token,
-      //   nonce: decodedjwt.nonce,
-      // });
-      // if (error) {
-      //   console.log("Supabase signInWithIdToken: ", error);
-      // }
+      const supabase = createClient();
+      const decodedjwt = jwtDecode(id_token) as any;
+      const { error } = await supabase.auth.signInWithIdToken({
+        provider: "google",
+        token: id_token,
+        access_token: access_token,
+        nonce: decodedjwt.nonce,
+      });
+      if (error) {
+        console.log("Supabase signInWithIdToken: ", error);
+      }
     } catch (e) {
       console.log("error: ", e);
     }
@@ -63,5 +63,5 @@ export async function GET(request: Request) {
     console.log("Code not found in request");
   }
   // return NextResponse.redirect(`${origin}/${location}`);
-  return NextResponse.redirect(`${origin}/signup`);
+  return NextResponse.redirect(`${origin}`);
 }

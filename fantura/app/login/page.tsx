@@ -6,13 +6,15 @@ import Link from "next/link";
 import { UserAuthForm } from "../../components/ui/user-auth-form";
 import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";
 import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
-import { generateRandomness } from "@mysten/zklogin";
+import { generateRandomness, generateNonce } from "@mysten/zklogin";
 import BackButton from "@/components/ui/back-button";
-import { logIn } from "../actions/auth/logIn";
 import { useZkLoginState } from "@/utils/contexts/zkLoginState";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const { setZkLoginState } = useZkLoginState();
+  const router = useRouter();
+
   async function signIn() {
     const client = new SuiClient({ url: getFullnodeUrl("testnet") });
     const { epoch } = await client.getLatestSuiSystemState();
@@ -25,7 +27,17 @@ export default function Login() {
       jwtRandomness,
     });
     setZkLoginState(encodedState);
-    await logIn(encodedState);
+    const ephemeralPublicKey = ephemeralKey.getPublicKey();
+    const nonce = generateNonce(ephemeralPublicKey, maxEpoch, jwtRandomness);
+    const params = new URLSearchParams({
+      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
+      redirect_uri: process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!,
+      response_type: "code",
+      scope: "openid",
+      nonce: nonce,
+    });
+    const loginURL = `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
+    router.push(loginURL);
   }
   return (
     <>

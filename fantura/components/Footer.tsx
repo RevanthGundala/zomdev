@@ -9,12 +9,12 @@ import { NAME } from "../utils/constants";
 export default function Footer() {
   return (
     <>
-      <footer className="dark bg-gray-900 text-gray-200 py-6">
+      <footer className="w-full dark bg-gray-900 text-gray-200 py-6">
         <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center justify-between">
           <div className="text-center md:text-left mb-4 md:mb-0">
             <p className="text-sm">© 2024 {NAME} Inc. All rights reserved.</p>
           </div>
-          <div className="flex items-center justify-center space-x-4">
+          {/* <div className="flex items-center justify-center space-x-4">
             <Link
               className="text-gray-400 hover:text-gray-100 transition-colors"
               href="#"
@@ -36,7 +36,7 @@ export default function Footer() {
               <TwitterIcon className="h-6 w-6" />
               <span className="sr-only">Twitter</span>
             </Link>
-          </div>
+          </div> */}
         </div>
       </footer>
     </>

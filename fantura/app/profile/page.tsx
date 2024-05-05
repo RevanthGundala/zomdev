@@ -3,25 +3,36 @@
  * @see https://v0.dev/t/MeSpDnKyjpf
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
+"use client";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CardContent, Card, CardHeader } from "@/components/ui/card";
-import { RadioGroup } from "@/components/ui/radio-group";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ConnectedAccounts from "./ConnectedAccounts";
-import { getAuthProfile } from "../actions/profile/getAuthProfile";
-import Error from "./error";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default async function Profile() {
+  const deleteAccount = async () => {
+    // await deleteAuthProfile();
+    // await logout();
+  };
   // const { data, error } = await getAuthProfile();
 
   return (
     <div>
       <Navbar />
-      {/* <ErrorBoundary fallback={<Error />} */}
       <div className="space-y-6 px-20 mb-10 mt-40 min-h-screen">
         {/* <header className="space-y-2 py-5">
           <div className="flex items-center space-x-3">
@@ -47,21 +58,16 @@ export default async function Profile() {
           <Card>
             <CardContent className="space-y-6 py-5">
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">Username</Label>
                 <Input
                   defaultValue="Meadow Richardson"
                   id="name"
                   placeholder="E.g. Jane Doe"
-                  disabled
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  placeholder="E.g. jane@example.com"
-                  disabled
-                />
+                <Input id="email" placeholder="E.g. jane@example.com" />
               </div>
               <div className="space-y-2">
                 <Label>Biography</Label>
@@ -75,27 +81,41 @@ export default async function Profile() {
                 />
               </div>
             </CardContent>
+            <div className="p-6">
+              <Button>Save</Button>
+            </div>
           </Card>
-          <Card>
-            <CardHeader>
-              <div>Language</div>
-              <div>Choose your preferred language</div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <RadioGroup defaultValue="en" />
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
+
+          {/* <Card>
             <CardHeader>
               <div className="text-2xl">Connected Accounts</div>
             </CardHeader>
             <ConnectedAccounts />
-          </Card>
+          </Card> */}
         </div>
-        <div className="pt-6">
-          <Button>Save</Button>
+        <div className="p-6">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button className="border-2 border-red-400 bg-white hover:bg-red-400">
+                Delete Account
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your account and remove your data from our servers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={deleteAccount}>
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
       <Footer />

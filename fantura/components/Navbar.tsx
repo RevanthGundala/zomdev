@@ -36,13 +36,13 @@ export default function Navbar() {
             <img src="/vercel.svg" alt="Logo" className="h-8" />
           </Link>
         </NavigationMenuItem>
-        <NavigationMenuItem className="flex">
+        {/* <NavigationMenuItem className="flex">
           <Link href="/" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               About
             </NavigationMenuLink>
           </Link>
-        </NavigationMenuItem>
+        </NavigationMenuItem> */}
         <NavigationMenuItem className="flex">
           <Link href="/contact" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
@@ -50,73 +50,76 @@ export default function Navbar() {
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
-        <NavigationMenuItem className="flex">
-          <Link href="/" legacyBehavior passHref>
+        {/* <NavigationMenuItem className="flex">
+          <Link href="/companies" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Teams
+              Companies
             </NavigationMenuLink>
           </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem className="flex flex-1">
-          <SearchBar />
-        </NavigationMenuItem>
+        </NavigationMenuItem> */}
+        <NavigationMenuItem className="flex flex-1"></NavigationMenuItem>
         <NavigationMenuItem className="flex">
-          <Link href="/" legacyBehavior passHref>
+          <Link href="/bounties" legacyBehavior passHref>
             <NavigationMenuLink
               className={[
                 "bg-black text-white",
                 navigationMenuTriggerStyle(),
               ].join(" ")}
             >
-              Team Sign Up
+              Bounties
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Avatar className="hover:cursor-pointer">
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {/* TODO: */}
-            {true ? (
-              <>
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
-                    <Link href="/profile">Profile</Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <BookHeart className="mr-2 h-4 w-4" />
-                    <Link href="/bounties">Bounties</Link>
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
+        {true ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Avatar className="hover:cursor-pointer">
+                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+
+              <DropdownMenuGroup>
                 <DropdownMenuItem>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <button
-                    onClick={async () => {
-                      removeZkLoginSession();
-                      removeZkLoginState();
-                      await logOut();
-                    }}
-                  >
-                    Log out
-                  </button>
+                  <User className="mr-2 h-4 w-4" />
+                  <Link href="/profile">Profile</Link>
                 </DropdownMenuItem>
-              </>
-            ) : (
+                <DropdownMenuItem>
+                  <BookHeart className="mr-2 h-4 w-4" />
+                  <Link href="/bounties/create">Create Bounty</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <BookHeart className="mr-2 h-4 w-4" />
+                  <Link href="/bounties/view">My Bounties</Link>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <LogIn className="mr-2 h-4 w-4" />
-                <Link href="/login">Log In</Link>
+                <LogOut className="mr-2 h-4 w-4" />
+                <button
+                  onClick={async () => {
+                    removeZkLoginSession();
+                    removeZkLoginState();
+                    await logOut();
+                  }}
+                >
+                  Log out
+                </button>
               </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <NavigationMenuItem className="flex">
+            <Link href="/contact" legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                Contact
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+        )}
       </NavigationMenuList>
     </NavigationMenu>
   );

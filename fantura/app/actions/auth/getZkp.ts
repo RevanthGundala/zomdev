@@ -3,7 +3,7 @@ import { ZkWalletClient, ZkProverClient } from "@shinami/clients";
 import { getZkLoginSignature, genAddressSeed } from "@mysten/zklogin";
 import { JwtPayload, jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
-import { deserializeZkLoginState } from "../utils/serde";
+import { deserializeZkLoginState } from "../../../utils/tx-helpers/serde";
 
 type PartialZkLoginSignature = Omit<
   Parameters<typeof getZkLoginSignature>["0"]["inputs"],
