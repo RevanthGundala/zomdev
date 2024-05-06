@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Navbar from "@/components/Navbar";
-import { getBounties } from "../../utils/move-calls/get/getBounties";
+import { getBounties } from "../actions/contract/get/getBounties";
 import {
   Card,
   CardContent,
@@ -34,7 +34,7 @@ export default function Bounties() {
               className="hover:border-2 hover:border-blue-200 hover:cursor-pointer"
               onClick={() =>
                 router.push(
-                  `/bounties/${bounty.company}/bounty?id=${bounty.id}&isOwner=${false}`,
+                  `/bounties/${bounty.company}/bounty?id=${bounty.id}`
                 )
               }
             >
@@ -51,7 +51,7 @@ export default function Bounties() {
                       <h1 className="font-bold">{bounty.status}</h1>
                     </div>
                   </div>
-                  <h2>{bounty.title}</h2>
+                  <div>{bounty.title}</div>
                 </CardTitle>
               </CardHeader>
               <CardContent>

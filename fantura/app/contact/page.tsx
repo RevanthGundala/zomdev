@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import { Card } from "@/components/ui/card";
 import { useFormStatus } from "react-dom";
-import { contactUs } from "../actions/email/contactUs";
+import { contactUs } from "../actions/forms/contactUs";
 import Footer from "@/components/Footer";
 
 export default function Contact() {

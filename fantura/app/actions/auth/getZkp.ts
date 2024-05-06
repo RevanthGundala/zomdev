@@ -3,7 +3,7 @@ import { ZkWalletClient, ZkProverClient } from "@shinami/clients";
 import { getZkLoginSignature, genAddressSeed } from "@mysten/zklogin";
 import { JwtPayload, jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
-import { deserializeZkLoginState } from "../../../utils/tx-helpers/serde";
+import { deserializeZkLoginState } from "../contract/helpers/serde";
 
 type PartialZkLoginSignature = Omit<
   Parameters<typeof getZkLoginSignature>["0"]["inputs"],
@@ -50,7 +50,7 @@ export async function getZkp(state: string): Promise<ZkLoginSession> {
       maxEpoch,
       ephemeralPublicKey,
       BigInt(jwtRandomness),
-      userSalt,
+      userSalt
     );
     proof = zkProof;
   } catch (e) {

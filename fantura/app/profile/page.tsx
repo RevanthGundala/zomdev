@@ -23,7 +23,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-export default async function Profile() {
+export default function Profile() {
   const deleteAccount = async () => {
     // await deleteAuthProfile();
     // await logout();
@@ -58,12 +58,8 @@ export default async function Profile() {
           <Card>
             <CardContent className="space-y-6 py-5">
               <div className="space-y-2">
-                <Label htmlFor="name">Username</Label>
-                <Input
-                  defaultValue="Meadow Richardson"
-                  id="name"
-                  placeholder="E.g. Jane Doe"
-                />
+                <Label htmlFor="name">Name</Label>
+                <Input id="name" placeholder="E.g. Jane Doe" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>

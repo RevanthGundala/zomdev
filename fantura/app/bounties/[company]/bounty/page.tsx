@@ -19,7 +19,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useSearchParams } from "next/navigation";
-import { getBounty } from "@/utils/move-calls/get/getBounty";
+import { getBounty } from "@/app/actions/contract/get/getBounty";
 import { Button } from "@/components/ui/button";
 import { Clock4, Dot } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -28,27 +28,35 @@ import Navbar from "@/components/Navbar";
 import SuccessPopup from "@/components/popup/success";
 import Footer from "@/components/Footer";
 import { useEffect, useState } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  EmbeddedCheckoutProvider,
+  EmbeddedCheckout,
+} from "@stripe/react-stripe-js";
+import { useStripeProduct } from "@/utils/hooks/useStripeProduct";
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
 
 export default function Bounty() {
   const id = useSearchParams().get("id");
-  const isOwner = useSearchParams().get("isOwner");
-  console.log("isOwner", isOwner);
+  const isOwner = true;
   const bounty = getBounty();
+
   const [submitted, setSubmitted] = useState(false);
   const [githubLink, setGithubLink] = useState("");
   const [winner, setWinner] = useState("");
 
+  const { clientSecret } = useStripeProduct(id);
+
+  useEffect(() => {
+    console.log("Client Secret Updated:", clientSecret);
+  }, [clientSecret]);
+
   function handleSubmit() {
     setSubmitted(true);
   }
-
-  function chooseWinner() {
-    setSubmitted(true);
-  }
-
-  useEffect(() => {
-    console.log(submitted);
-  }, [submitted]);
 
   return (
     <>
@@ -137,9 +145,25 @@ export default function Bounty() {
                   />
                 </CardContent>
                 <CardFooter>
-                  <Button variant="outline" onClick={chooseWinner}>
-                    Submit
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" onClick={handleSubmit}>
+                        Submit
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent hidden={!submitted}>
+                      {clientSecret && (
+                        <div id="checkout">
+                          <EmbeddedCheckoutProvider
+                            stripe={stripePromise}
+                            options={{ clientSecret }}
+                          >
+                            <EmbeddedCheckout />
+                          </EmbeddedCheckoutProvider>
+                        </div>
+                      )}
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </CardFooter>
               </>
             )}

@@ -16,14 +16,57 @@ import React, { useState } from "react";
 import DatePicker from "react-date-picker";
 import "react-date-picker/dist/DatePicker.css";
 import "react-calendar/dist/Calendar.css";
-import { createBounty } from "@/utils/move-calls/post/createBounty";
+import { createBounty } from "@/app/actions/contract/post/createBounty";
+import { createProduct } from "@/app/actions/stripe/create-product";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import { useZkLoginState } from "@/utils/contexts/zkLoginState";
+import { useZkLoginSession } from "@/utils/contexts/zkLoginSession";
 
 type ValuePiece = Date | null;
 
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 export default function Create() {
-  const [value, onChange] = useState<Value>(new Date());
+  const [title, setTitle] = useState("");
+  const [reward, setReward] = useState(0);
+  const [deadline, onChange] = useState<Value>(new Date());
+  const [description, setDescription] = useState("");
+  const [requirements, setRequirements] = useState("");
+  const router = useRouter();
+  const { toast } = useToast();
+  const { zkLoginSession } = useZkLoginSession();
+  const { zkLoginState } = useZkLoginState();
+
+  async function publish() {
+    await createBounty(
+      zkLoginState,
+      zkLoginSession,
+      title,
+      description,
+      requirements,
+      reward,
+      deadline?.toString()
+    );
+    const id = "1";
+    // const priceId = await createProduct(id, title, reward);
+    toast({
+      title: "Success!",
+      description: "Your bounty has been created successfully.",
+      action: (
+        <ToastAction
+          altText="View Bounty"
+          onClick={() => router.push(`/bounty/${id}`)}
+        >
+          View Bounty
+        </ToastAction>
+      ),
+    });
+  }
+
+  console.log("deadline", deadline?.toString());
+
   return (
     <div>
       <Navbar />
@@ -41,6 +84,8 @@ export default function Create() {
                 <Input
                   placeholder="Meadow Richardson"
                   id="challenge"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                   required
                 />
               </div>
@@ -60,7 +105,7 @@ export default function Create() {
                         id="date"
                         className="py-2"
                         onChange={onChange}
-                        value={value}
+                        value={deadline}
                       />
                     </div>
                   </div>
@@ -92,7 +137,7 @@ export default function Create() {
           </Card>
         </div>
         <div className="pt-6">
-          <Button type="submit" onClick={createBounty}>
+          <Button type="submit" onClick={publish}>
             Publish
           </Button>
         </div>

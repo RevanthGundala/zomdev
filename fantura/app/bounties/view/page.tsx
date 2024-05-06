@@ -14,7 +14,7 @@ import { Dot, Clock4, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { MAX_LENGTH } from "@/utils/constants";
 import Footer from "@/components/Footer";
-import { getBountiesOwnedBy } from "@/utils/move-calls/get/getBountiesOwnedBy";
+import { getBountiesOwnedBy } from "@/app/actions/contract/get/getBountiesOwnedBy";
 
 export default function View() {
   const router = useRouter();
@@ -33,7 +33,7 @@ export default function View() {
               className="hover:border-2 hover:border-blue-200 hover:cursor-pointer"
               onClick={() =>
                 router.push(
-                  `/bounties/${bounty.company}/bounty?id=${bounty.id}&isOwner=${true}`,
+                  `/bounties/${bounty.company}/bounty?id=${bounty.id}`
                 )
               }
             >
@@ -45,12 +45,12 @@ export default function View() {
                     </h1>
                     <div className="flex font-normal text-sm text-gray-500 items-center">
                       <Clock4 />
-                      <h1>{bounty.dateEnd}</h1>
+                      <div>{bounty.dateEnd}</div>
                       <Dot />
-                      <h1 className="font-bold">{bounty.status}</h1>
+                      <div className="font-bold">{bounty.status}</div>
                     </div>
                   </div>
-                  <h2>{bounty.title}</h2>
+                  <div>{bounty.title}</div>
                 </CardTitle>
               </CardHeader>
               <CardContent>

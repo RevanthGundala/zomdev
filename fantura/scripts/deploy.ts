@@ -7,6 +7,7 @@ import { execSync } from "child_process";
 import { fileURLToPath } from "url";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { writeFileSync } from "fs";
+import { NAME } from "../utils/constants";
 
 dotenv.config({ path: ".env.local" });
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
@@ -15,7 +16,10 @@ if (!PRIVATE_KEY) throw new Error("PRIVATE_KEY is not set");
 const keypair = Ed25519Keypair.fromSecretKey(fromHEX(PRIVATE_KEY));
 const client = new SuiClient({ url: getFullnodeUrl("testnet") });
 const path_to_scripts = dirname(fileURLToPath(import.meta.url));
-const path_to_contracts = path.join(path_to_scripts, "../../contracts/fantura");
+const path_to_contracts = path.join(
+  path_to_scripts,
+  `../../contracts/${NAME.toLowerCase()}`,
+);
 console.log("Building contracts...");
 const { modules, dependencies } = JSON.parse(
   execSync(
@@ -59,12 +63,23 @@ async function main() {
     throw new Error("Could not find published change");
   }
 
-  // TODO: Modify deploy script to account for object changes
+  const created_change = objectChanges?.find(
+    (change) => change.type === "created",
+  );
+
+  if (created_change?.type !== "created") {
+    throw new Error("Could not find created change");
+  }
+
   const deployed_address = {
     PACKAGE_ID: published_change.packageId,
+    THE_BUILD_WORK: created_change.objectId,
   };
 
-  const deployed_path = path.join(path_to_scripts, "../deployed_objects.json");
+  const deployed_path = path.join(
+    path_to_scripts,
+    "../deployed_addresses.json",
+  );
   writeFileSync(deployed_path, JSON.stringify(deployed_address, null, 2));
   console.log(
     "----------------------------------------------------------------------------------------------------",
