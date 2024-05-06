@@ -28,6 +28,7 @@ export default function Home() {
       description: state?.message,
     });
   }, [state, toast]);
+
   return (
     <div className="w-full min-h-screen flex flex-col justify-center items-center">
       <section className="w-full max-w-4xl px-4 md:px-6 py-12 md:py-24 lg:py-32 xl:py-48">

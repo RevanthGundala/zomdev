@@ -19,7 +19,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useSearchParams } from "next/navigation";
-import { getBounty } from "@/app/actions/contract/get/getBounty";
+import { getBountyById } from "@/app/actions/contract/get/getBountyById";
 import { Button } from "@/components/ui/button";
 import { Clock4, Dot } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -42,7 +42,7 @@ const stripePromise = loadStripe(
 export default function Bounty() {
   const id = useSearchParams().get("id");
   const isOwner = true;
-  const bounty = getBounty();
+  const bounty = getBountyById(id);
 
   const [submitted, setSubmitted] = useState(false);
   const [githubLink, setGithubLink] = useState("");

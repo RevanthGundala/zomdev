@@ -1,7 +1,6 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "@/components/Navbar";
-import { getBounties } from "../actions/contract/get/getBounties";
 import {
   Card,
   CardContent,
@@ -14,14 +13,15 @@ import { Dot, Clock4, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { MAX_LENGTH } from "@/utils/constants";
 import Footer from "@/components/Footer";
+import { getAllBounties } from "../actions/contract/get/getAllBounties";
 
 export default function Bounties() {
   const router = useRouter();
-  const bounties = getBounties();
 
   return (
     <>
-      <Navbar />
+      <button onClick={getAllBounties}>Get bounties</button>
+      {/* <Navbar />
       <div className="space-y-6 px-20 mb-10 mt-40 min-h-screen">
         <header className="text-4xl font-bold px-2">Bounties</header>
         <p className="text-lg font-light px-2">
@@ -75,7 +75,7 @@ export default function Bounties() {
           ))}
         </section>
       </div>
-      <Footer />
+      <Footer /> */}
     </>
   );
 }
