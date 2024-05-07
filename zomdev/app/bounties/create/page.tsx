@@ -40,6 +40,7 @@ export default function Create() {
   const { zkLoginState } = useZkLoginState();
 
   async function publish() {
+    const company = "1";
     const { error } = await createBounty(
       zkLoginState,
       zkLoginSession,

@@ -42,13 +42,14 @@ const stripePromise = loadStripe(
 export default function Bounty() {
   const id = useSearchParams().get("id");
   const isOwner = true;
-  const bounty = getBountyById(id);
 
   const [submitted, setSubmitted] = useState(false);
   const [githubLink, setGithubLink] = useState("");
   const [winner, setWinner] = useState("");
 
   const { clientSecret } = useStripeProduct(id);
+
+  const bounty = {} as any;
 
   useEffect(() => {
     console.log("Client Secret Updated:", clientSecret);
