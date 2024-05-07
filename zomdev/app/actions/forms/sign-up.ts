@@ -38,16 +38,30 @@ export async function signUpCompany(formData: FormData) {
   const { name, company, email } = validatedFields.data;
 
   // Add to db
+
+  // TODO: Set auth email to be foreign relation key
   const supabase = createClient();
-  const { data, error } = await supabase
+  const { data, error: dbError } = await supabase.auth.getUser();
+  if (dbError) {
+    console.error("Error getting user auth data: ", dbError);
+    return;
+  }
+
+  const { error } = await supabase
     .from("Users")
-    .upsert([{ name: name }, { company: company }, { email: email }]);
+    .insert([
+      {
+        name: name,
+        company: company,
+        email: email,
+        auth_email: data.user.email,
+      },
+    ]);
 
   if (error) {
     console.error("Error signing up: ", error);
   } else {
-    console.log("Sign Up successful!: ", data);
-    redirect("/bounties");
+    redirect("/signup/success");
   }
 }
 
@@ -89,6 +103,6 @@ export async function signUpUser(formData: FormData) {
     console.error("Error signing up: ", error);
   } else {
     console.log("Sign Up successful!: ", data);
-    redirect("/bounties");
+    redirect("/login");
   }
 }

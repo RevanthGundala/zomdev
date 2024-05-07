@@ -5,12 +5,12 @@
  */
 import Link from "next/link";
 
-export default function Component() {
+export default function SignUp() {
   return (
     <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-gray-100 px-4 py-12 dark:bg-gray-950">
       <div className="mx-auto max-w-md space-y-6 rounded-lg bg-white p-6 shadow-lg dark:bg-gray-900">
         <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold">Sign Up</h1>
+          <h1 className="text-3xl font-bold">Finish Creating Your Account</h1>
           <p className="text-gray-500 dark:text-gray-400">
             Choose the type of account you'd like to create.
           </p>
@@ -36,7 +36,7 @@ export default function Component() {
   );
 }
 
-function BuildingIcon(props) {
+function BuildingIcon(props: any) {
   return (
     <svg
       {...props}
@@ -65,7 +65,7 @@ function BuildingIcon(props) {
   );
 }
 
-function UserIcon(props) {
+function UserIcon(props: any) {
   return (
     <svg
       {...props}

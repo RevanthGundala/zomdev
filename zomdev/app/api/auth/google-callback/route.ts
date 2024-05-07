@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { jwtDecode } from "jwt-decode";
+import { getProfile } from "@/app/actions/auth/get-profile";
+import { redirect } from "next/navigation";
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
@@ -34,6 +36,8 @@ export async function GET(request: Request) {
       // Extract JWT from claims
       const claims = await response.json();
       const { id_token, access_token } = claims;
+
+      // TODO: Remove cookies and use supabase session instead
       cookies().set({
         name: "jwt",
         value: id_token,
@@ -45,6 +49,7 @@ export async function GET(request: Request) {
       // Set main session for supabase auth linking
       const supabase = createClient();
       const decodedjwt = jwtDecode(id_token) as any;
+
       const { error } = await supabase.auth.signInWithIdToken({
         provider: "google",
         token: id_token,
@@ -54,6 +59,11 @@ export async function GET(request: Request) {
       if (error) {
         console.log("Supabase signInWithIdToken: ", error);
       }
+
+      const { data, error: profileError } = await getProfile();
+      if (profileError) return NextResponse.redirect(`${origin}`);
+      else if (data?.length === 0)
+        return NextResponse.redirect(`${origin}/signup`);
     } catch (e) {
       console.log("error: ", e);
     }
@@ -62,6 +72,5 @@ export async function GET(request: Request) {
   } else {
     console.log("Code not found in request");
   }
-  // return NextResponse.redirect(`${origin}/${location}`);
-  return NextResponse.redirect(`${origin}`);
+  return NextResponse.redirect(`${origin}/${location}`);
 }

@@ -40,15 +40,20 @@ export default function Create() {
   const { zkLoginState } = useZkLoginState();
 
   async function publish() {
-    await createBounty(
+    const { error } = await createBounty(
       zkLoginState,
       zkLoginSession,
+      company,
       title,
       description,
       requirements,
       reward,
+      new Date().toString(),
       deadline?.toString()
     );
+    if (error) {
+      return;
+    }
     const id = "1";
     // const priceId = await createProduct(id, title, reward);
     toast({
@@ -120,6 +125,8 @@ export default function Create() {
                   style={{
                     minHeight: "100px",
                   }}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                 />
               </div>
               <div className="space-y-2">
@@ -131,6 +138,8 @@ export default function Create() {
                   style={{
                     minHeight: "100px",
                   }}
+                  value={requirements}
+                  onChange={(e) => setRequirements(e.target.value)}
                 />
               </div>
             </CardContent>

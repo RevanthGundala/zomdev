@@ -9,7 +9,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { LogOut, User, LogIn, BookHeart } from "lucide-react";
+import { LogOut, User, BookHeart } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,25 +24,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { logOut } from "../app/actions/auth/logOut";
 import { useZkLoginSession } from "@/utils/contexts/zkLoginSession";
 import { useZkLoginState } from "@/utils/contexts/zkLoginState";
+import { useAuth } from "@/utils/hooks/useAuth";
 
 export default function Navbar() {
   const { removeZkLoginSession } = useZkLoginSession();
   const { removeZkLoginState } = useZkLoginState();
+  const { isAuthenticated } = useAuth();
   return (
     <NavigationMenu className="min-w-full fixed top-0 z-50 bg-white">
       <NavigationMenuList className="flex space-x-6 px-20 py-10 items-center">
         <NavigationMenuItem className="flex">
           <Link href="/" legacyBehavior passHref>
-            <img src="/vercel.svg" alt="Logo" className="h-8" />
+            <img src="/zomdev.png" alt="Logo" className="w-14 h-14" />
           </Link>
         </NavigationMenuItem>
-        {/* <NavigationMenuItem className="flex">
-          <Link href="/" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              About
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem> */}
         <NavigationMenuItem className="flex">
           <Link href="/contact" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
@@ -50,27 +45,15 @@ export default function Navbar() {
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
-        {/* <NavigationMenuItem className="flex">
-          <Link href="/companies" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Companies
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem> */}
-        <NavigationMenuItem className="flex flex-1"></NavigationMenuItem>
         <NavigationMenuItem className="flex">
           <Link href="/bounties" legacyBehavior passHref>
-            <NavigationMenuLink
-              className={[
-                "bg-black text-white",
-                navigationMenuTriggerStyle(),
-              ].join(" ")}
-            >
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               Bounties
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
-        {true ? (
+        <NavigationMenuItem className="flex flex-1" />
+        {isAuthenticated ? (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar className="hover:cursor-pointer">
@@ -112,13 +95,27 @@ export default function Navbar() {
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          <NavigationMenuItem className="flex">
-            <Link href="/contact" legacyBehavior passHref>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                Contact
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
+          <>
+            <NavigationMenuItem className="flex">
+              <Link href="/signup" legacyBehavior passHref>
+                <NavigationMenuLink
+                  className={[
+                    "bg-black text-white",
+                    navigationMenuTriggerStyle(),
+                  ].join(" ")}
+                >
+                  Sign Up
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem className="flex">
+              <Link href="/login" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Login
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          </>
         )}
       </NavigationMenuList>
     </NavigationMenu>

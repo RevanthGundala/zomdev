@@ -3,7 +3,6 @@
  * @see https://v0.dev/t/MeSpDnKyjpf
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-"use client";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -11,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { CardContent, Card, CardHeader } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Link from "next/link";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,13 +22,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { getProfile } from "../actions/auth/get-profile";
 
-export default function Profile() {
-  const deleteAccount = async () => {
-    // await deleteAuthProfile();
-    // await logout();
-  };
-  // const { data, error } = await getAuthProfile();
+export default async function Profile() {
+  await getProfile();
 
   return (
     <div>
@@ -90,7 +87,13 @@ export default function Profile() {
           </Card> */}
         </div>
         <div className="p-6">
-          <AlertDialog>
+          <Link
+            href="/delete-account"
+            className="border-2 border-red-400 bg-white hover:bg-red-400"
+          >
+            Delete Account
+          </Link>
+          {/* <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button className="border-2 border-red-400 bg-white hover:bg-red-400">
                 Delete Account
@@ -111,7 +114,7 @@ export default function Profile() {
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
-          </AlertDialog>
+          </AlertDialog> */}
         </div>
       </div>
       <Footer />
