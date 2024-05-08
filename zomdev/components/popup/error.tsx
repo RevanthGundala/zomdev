@@ -30,7 +30,7 @@ export default function ErrorPopup() {
   );
 }
 
-function TriangleAlertIcon(props) {
+function TriangleAlertIcon(props: any) {
   return (
     <svg
       {...props}

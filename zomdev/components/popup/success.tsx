@@ -31,7 +31,7 @@ export default function SuccessPopup() {
   );
 }
 
-function CheckIcon(props) {
+function CheckIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
