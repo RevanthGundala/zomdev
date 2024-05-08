@@ -28,8 +28,13 @@ export function useZkp() {
         }
         // We know data is not null
         console.log("Data: ", data);
-        const { zkLoginUserAddress, inputs } = data;
-        setZkLoginSession(JSON.stringify({ zkLoginUserAddress, inputs }));
+
+        setZkLoginSession(
+          JSON.stringify({
+            zkLoginUserAddress: data?.zkLoginUserAddress,
+            inputs: data?.inputs,
+          })
+        );
       })
       .catch((e) => console.log(e));
     setIsLoading(false);
