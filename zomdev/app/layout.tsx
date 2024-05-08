@@ -13,7 +13,7 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Zomdev",
-  description: "",
+  description: "Hire Top Talent with Our Developer Bounty Platform",
 };
 
 const fontSans = FontSans({
