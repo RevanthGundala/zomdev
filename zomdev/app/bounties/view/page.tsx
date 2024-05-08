@@ -25,7 +25,7 @@ export default function View() {
         <header className="text-4xl font-bold px-2">Bounties</header>
         <p className="text-lg font-light px-2">My Bounties</p>
         <section className="flex flex-col space-y-4">
-          {bounties.length &&
+          {bounties.length > 0 &&
             bounties.map((bounty: any, index: any) => (
               <Card
                 key={index}
