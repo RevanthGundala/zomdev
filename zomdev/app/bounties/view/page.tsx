@@ -17,7 +17,7 @@ import { getBountiesOwnedBy } from "@/app/actions/contract/get/getBountiesOwnedB
 
 export default function View() {
   const router = useRouter();
-  const bounties = {} as any;
+  const bounties = [{}] as any;
   return (
     <>
       <Navbar />
