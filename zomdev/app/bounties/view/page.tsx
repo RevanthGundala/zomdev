@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import Navbar from "@/components/Navbar";
-import { getBounties } from "../../utils/move-calls/get/getBounties";
 import {
   Card,
   CardContent,
@@ -18,8 +17,7 @@ import { getBountiesOwnedBy } from "@/app/actions/contract/get/getBountiesOwnedB
 
 export default function View() {
   const router = useRouter();
-  const bounties = getBountiesOwnedBy();
-
+  const bounties = {} as any;
   return (
     <>
       <Navbar />
@@ -27,7 +25,7 @@ export default function View() {
         <header className="text-4xl font-bold px-2">Bounties</header>
         <p className="text-lg font-light px-2">My Bounties</p>
         <section className="flex flex-col space-y-4">
-          {bounties.map((bounty, index) => (
+          {bounties.map((bounty: any, index: any) => (
             <Card
               key={index}
               className="hover:border-2 hover:border-blue-200 hover:cursor-pointer"
