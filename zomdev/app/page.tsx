@@ -48,6 +48,8 @@ export default function Home() {
               <div className="w-full max-w-sm space-y-2">
                 <form className="flex space-x-2" action={formAction}>
                   <Input
+                    id="email"
+                    name="email"
                     className="max-w-lg flex-1"
                     placeholder="Enter your email"
                     type="email"

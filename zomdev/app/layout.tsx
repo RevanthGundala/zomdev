@@ -12,7 +12,7 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Fantura",
+  title: "Zomdev",
   description: "",
 };
 
@@ -34,7 +34,7 @@ export default function RootLayout({
           <body
             className={cn(
               "min-h-screen bg-background font-sans antialiased",
-              fontSans.variable,
+              fontSans.variable
             )}
           >
             {children}
