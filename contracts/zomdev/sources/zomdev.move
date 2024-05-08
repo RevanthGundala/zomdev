@@ -16,7 +16,7 @@ module zomdev::core {
         description: String,
         requirements: String,
         reward: u64,
-        num_submissions: u64,
+        submissions: vector<address>,
         created_at: String,
         deadline: String,
     }
@@ -52,7 +52,7 @@ module zomdev::core {
             description,
             requirements,
             reward,
-            num_submissions: 0,
+            submissions: vector[],
             created_at,
             deadline
         };
@@ -65,10 +65,11 @@ module zomdev::core {
 
     }
 
-    public fun createSubmission() {
-        // TODO
+    // public fun createBountySubmission(platform: &mut Platform, ctx : &mut TxContext) {
+    //      platform.bounties[ctx.sender()].push_back(ctx.sender());
+         
     
-    }
+    // }
 
     public fun getBountiesOwnedBy(platform: &Platform, user: address): &vector<Bounty> {
         platform.bounties.borrow(user)
