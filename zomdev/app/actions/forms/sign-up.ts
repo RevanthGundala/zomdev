@@ -4,6 +4,7 @@
 import { z } from "zod";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { addCompany } from "../contract/post/addCompany";
 
 const companySchema = z.object({
   name: z.string({
@@ -20,7 +21,11 @@ const companySchema = z.object({
   }),
 });
 
-export async function signUpCompany(formData: FormData) {
+export async function signUpCompany(
+  session: string,
+  state: string,
+  formData: FormData
+) {
   const validatedFields = companySchema.safeParse({
     name: formData.get("name"),
     company: formData.get("company"),
@@ -47,16 +52,16 @@ export async function signUpCompany(formData: FormData) {
     return;
   }
 
-  const { error } = await supabase
-    .from("Users")
-    .insert([
-      {
-        name: name,
-        company: company,
-        email: email,
-        auth_email: data.user.email,
-      },
-    ]);
+  const { error } = await supabase.from("Users").insert([
+    {
+      name: name,
+      company: company,
+      email: email,
+      auth_email: data.user.email,
+    },
+  ]);
+
+  const { error: companyError } = await addCompany(state, session, company);
 
   if (error) {
     console.error("Error signing up: ", error);

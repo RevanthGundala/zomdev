@@ -34,12 +34,13 @@ import {
   EmbeddedCheckout,
 } from "@stripe/react-stripe-js";
 import { useStripeProduct } from "@/utils/hooks/useStripeProduct";
+import { Company, Bounty } from "@/utils/types/bounty";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 
-export default function Bounty() {
+export default function BountyId() {
   const id = useSearchParams().get("id");
   const isOwner = true;
 
@@ -47,13 +48,16 @@ export default function Bounty() {
   const [githubLink, setGithubLink] = useState("");
   const [winner, setWinner] = useState("");
 
-  const { clientSecret } = useStripeProduct(id);
-
-  const bounty = {} as any;
+  const [bounty, setBounty] = useState<Bounty | null | undefined>(null);
+  const [company, setCompany] = useState<Company | null | undefined>(null);
+  // const { clientSecret } = useStripeProduct(id);
 
   useEffect(() => {
-    console.log("Client Secret Updated:", clientSecret);
-  }, [clientSecret]);
+    getBountyById(id).then((data) => {
+      setBounty(data?.bounty);
+      setCompany(data?.company);
+    });
+  }, []);
 
   function handleSubmit() {
     setSubmitted(true);
@@ -69,25 +73,25 @@ export default function Bounty() {
               <CardTitle className="space-y-4">
                 <div className="flex">
                   <h1 className="flex flex-1 text-green-600">
-                    {bounty.reward}
+                    ${bounty?.reward}
                   </h1>
                   <div className="flex font-normal text-sm text-gray-500 items-center">
                     <Clock4 />
-                    <div>{bounty.dateEnd}</div>
+                    <div>{bounty?.deadline.substring(0, 10)}</div>
                     <Dot />
-                    <div className="font-bold">{bounty.status}</div>
+                    <div className="font-bold">open</div>
                   </div>
                 </div>
-                <div>{bounty.title}</div>
+                <div>{bounty?.title}</div>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <h1 className="font-semibold text-lg">Description</h1>
-              <p>{bounty.description}</p>
+              <p>{bounty?.description}</p>
             </CardContent>
             <CardContent className="space-y-3">
               <h1 className="font-semibold text-lg">Submission Requirements</h1>
-              <p>{bounty.description}</p>
+              <p>{bounty?.requirements}</p>
             </CardContent>
             {!isOwner ? (
               <>

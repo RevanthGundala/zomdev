@@ -1,11 +1,17 @@
 export type Bounty = {
   id: string;
-  company: string;
   title: string;
   description: string;
   requirements: string;
   reward: number;
-  numSubmissions: number;
+  submissions: string[];
   createdAt: string;
   deadline: string;
+};
+
+export type Company = string;
+
+export type BountyInfo = {
+  bounty: Bounty;
+  company: Company;
 };

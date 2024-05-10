@@ -3,9 +3,12 @@
  * @see https://v0.dev/t/5n6ZEvvNvKD
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
+"use client";
 import Link from "next/link";
+import { useZkp } from "@/utils/hooks/useZkp";
 
 export default function SignUp() {
+  const { error } = useZkp();
   return (
     <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-gray-100 px-4 py-12 dark:bg-gray-950">
       <div className="mx-auto max-w-md space-y-6 rounded-lg bg-white p-6 shadow-lg dark:bg-gray-900">

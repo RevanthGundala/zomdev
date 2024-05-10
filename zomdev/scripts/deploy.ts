@@ -18,7 +18,7 @@ const client = new SuiClient({ url: getFullnodeUrl("testnet") });
 const path_to_scripts = dirname(fileURLToPath(import.meta.url));
 const path_to_contracts = path.join(
   path_to_scripts,
-  `../../contracts/${NAME.toLowerCase()}`,
+  `../../contracts/${NAME.toLowerCase()}`
 );
 console.log("Building contracts...");
 const { modules, dependencies } = JSON.parse(
@@ -26,8 +26,8 @@ const { modules, dependencies } = JSON.parse(
     `sui move build --dump-bytecode-as-base64 --path ${path_to_contracts}`,
     {
       encoding: "utf-8",
-    },
-  ),
+    }
+  )
 );
 console.log("Deploying contracts...");
 
@@ -57,14 +57,15 @@ async function main() {
 
   console.log("Object changes: ", objectChanges);
   const published_change = objectChanges?.find(
-    (change) => change.type === "published",
+    (change) => change.type === "published"
   );
   if (published_change?.type !== "published") {
     throw new Error("Could not find published change");
   }
 
   const created_change = objectChanges?.find(
-    (change) => change.type === "created",
+    (change: any) =>
+      change.objectType === `${published_change.packageId}::core::Platform`
   );
 
   if (created_change?.type !== "created") {
@@ -73,25 +74,25 @@ async function main() {
 
   const deployed_address = {
     PACKAGE_ID: published_change.packageId,
-    THE_BUILD_WORK: created_change.objectId,
+    PLATFORM: created_change.objectId,
   };
 
   const deployed_path = path.join(
     path_to_scripts,
-    "../deployed_addresses.json",
+    "../deployed_addresses.json"
   );
   writeFileSync(deployed_path, JSON.stringify(deployed_address, null, 2));
   console.log(
-    "----------------------------------------------------------------------------------------------------",
+    "----------------------------------------------------------------------------------------------------"
   );
   console.log("Deployed contracts to: ", deployed_address);
   console.log(
     "Remaining Balance: ",
     parseFloat(
       (await client.getCoins({ owner: keypair.getPublicKey().toSuiAddress() }))
-        .data[0].balance,
+        .data[0].balance
     ) /
       Math.pow(10, SUI_DECIMALS) +
-      " SUI",
+      " SUI"
   );
 }

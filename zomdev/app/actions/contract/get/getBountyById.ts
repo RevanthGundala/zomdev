@@ -1,26 +1,10 @@
-"use client";
-import {
-  SuiClient,
-  SuiParsedData,
-  getFullnodeUrl,
-} from "@mysten/sui.js/client";
+"use server";
+import { Bounty } from "@/utils/types/bounty";
+import { getBounties } from "./getBounties";
+import { BountyInfo } from "@/utils/types/bounty";
 
 export async function getBountyById(id: string | null) {
   if (!id) return;
-  const client = new SuiClient({ url: getFullnodeUrl("testnet") });
-
-  try {
-    const objects = await client.getObject({
-      id,
-      options: {
-        showContent: true,
-      },
-    });
-    console.log("objects: ", objects);
-    if (objects.data?.content?.dataType === "moveObject") {
-      return (objects.data.content.fields as any).bounties;
-    }
-  } catch (error) {
-    console.error("Error fetching bounties:", error);
-  }
+  const { data } = await getBounties();
+  return data.find((bountyInfo: BountyInfo) => bountyInfo.bounty.id === id);
 }

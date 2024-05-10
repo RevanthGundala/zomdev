@@ -23,7 +23,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useZkLoginState } from "@/utils/contexts/zkLoginState";
 import { useZkLoginSession } from "@/utils/contexts/zkLoginSession";
-
+import { useZkp } from "@/utils/hooks/useZkp";
+import { getProfile } from "@/app/actions/auth/get-profile";
 type ValuePiece = Date | null;
 
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -36,15 +37,16 @@ export default function Create() {
   const [requirements, setRequirements] = useState("");
   const router = useRouter();
   const { toast } = useToast();
+
   const { zkLoginSession } = useZkLoginSession();
   const { zkLoginState } = useZkLoginState();
 
   async function publish() {
-    const company = "1";
+    const { data } = await getProfile();
     const { error } = await createBounty(
       zkLoginState,
       zkLoginSession,
-      company,
+      data?.company,
       title,
       description,
       requirements,
@@ -70,8 +72,6 @@ export default function Create() {
       ),
     });
   }
-
-  console.log("deadline", deadline?.toString());
 
   return (
     <div>

@@ -9,8 +9,19 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { signUpCompany } from "@/app/actions/forms/sign-up";
 import { useFormStatus } from "react-dom";
+import { useFormState } from "react-dom";
+import { useZkLoginSession } from "@/utils/contexts/zkLoginSession";
+import { useZkLoginState } from "@/utils/contexts/zkLoginState";
+import { useZkp } from "@/utils/hooks/useZkp";
 
 export default function SignUpCompany() {
+  const { zkLoginSession } = useZkLoginSession();
+  const { zkLoginState } = useZkLoginState();
+  const signUpCompanyWithZk = signUpCompany.bind(
+    null,
+    zkLoginSession,
+    zkLoginState
+  );
   const { pending } = useFormStatus();
   return (
     <section className="flex min-h-[100dvh] items-center justify-center bg-gray-100 px-4 py-12 dark:bg-gray-900">
@@ -21,7 +32,7 @@ export default function SignUpCompany() {
             Create your company account to get started with our platform.
           </p>
         </div>
-        <form className="grid gap-4" action={signUpCompany}>
+        <form className="grid gap-4" action={signUpCompanyWithZk}>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>

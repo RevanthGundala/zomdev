@@ -16,5 +16,5 @@ export async function getProfile() {
 
   if (error) return { data: null, error: "Error getting user db data" };
 
-  return { data: data, error: null };
+  return { data: data[0], error: null };
 }

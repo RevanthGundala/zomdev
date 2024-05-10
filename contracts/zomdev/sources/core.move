@@ -1,17 +1,21 @@
 module zomdev::core {
     use std::string::String;
-    use sui::table::{Self, Table};
+    use sui::object_table::{Self, ObjectTable};
     use sui::event;
+    use sui::dynamic_object_field as dof;
 
     public struct Platform has key {
         id: UID,
-        users: vector<address>,
-        bounties: Table<address, vector<Bounty>>
+        companies: ObjectTable<String, Company>,
     }
+
+    public struct Company has key, store {
+       id: UID,
+       reputation: u64,
+    } 
 
     public struct Bounty has key, store {
         id: UID,
-        company: String,
         title: String,
         description: String,
         requirements: String,
@@ -29,15 +33,22 @@ module zomdev::core {
         transfer::share_object(
             Platform {
                 id: object::new(ctx),
-                users: vector[],
-                bounties: table::new(ctx)
+                companies: object_table::new(ctx),
             }
         )
     }
 
+    public fun addCompany(platform: &mut Platform, name: String, ctx: &mut TxContext) {
+        let company = Company {
+            id: object::new(ctx),
+            reputation: 0,
+        };
+        platform.companies.add(name, company);
+    }
+
     public fun createBounty(
         platform: &mut Platform,
-        company: String,
+        company_name: String,
         title: String,
         description: String,
         requirements: String,
@@ -47,7 +58,6 @@ module zomdev::core {
         ctx: &mut TxContext) {
         let bounty = Bounty {
             id: object::new(ctx),
-            company,
             title,
             description,
             requirements,
@@ -56,13 +66,8 @@ module zomdev::core {
             created_at,
             deadline
         };
-        if(!platform.bounties.contains(ctx.sender())) {
-            platform.users.push_back(ctx.sender());
-            platform.bounties.add(ctx.sender(), vector[]);
-        };
-        event::emit(BountyPosted { id: object::uid_to_inner(&bounty.id) });
-        platform.bounties.borrow_mut(ctx.sender()).push_back(bounty);
-
+        event::emit(BountyPosted { id:  object::uid_to_inner(&bounty.id) });
+        dof::add(&mut platform.companies[company_name].id, title, bounty);
     }
 
     // public fun createBountySubmission(platform: &mut Platform, ctx : &mut TxContext) {
@@ -70,8 +75,4 @@ module zomdev::core {
          
     
     // }
-
-    public fun getBountiesOwnedBy(platform: &Platform, user: address): &vector<Bounty> {
-        platform.bounties.borrow(user)
-    }
 }

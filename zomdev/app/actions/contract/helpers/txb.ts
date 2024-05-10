@@ -1,4 +1,4 @@
-"use sever";
+"use server";
 import {
   SuiClient,
   SuiTransactionBlockResponse,
@@ -18,6 +18,7 @@ export async function newZkLoginTxb(
     const { zkLoginUserAddress } = await deserializeZkLoginSession(session);
     const txb = new TransactionBlock();
     txb.setSender(zkLoginUserAddress);
+    //txb.setGasBudget(1000000);
     return txb;
   } catch (e) {
     console.log("Error: ", e);
@@ -44,6 +45,8 @@ export async function executeZkLoginTxb(
       zkLoginUserAddress
     );
 
+    console.log("Sponsored Response: ", sponsoredResponse);
+
     const sponsoredStatus =
       await gasStationClient.getSponsoredTransactionBlockStatus(
         sponsoredResponse.txDigest
@@ -60,11 +63,16 @@ export async function executeZkLoginTxb(
       signer: ephemeralKey,
     });
 
+    console.log("User Signature: ", userSignature);
+
     const zkLoginSignature: SerializedSignature = getZkLoginSignature({
       inputs,
       maxEpoch,
       userSignature,
     });
+
+    console.log("ZkLogin Signature: ", zkLoginSignature);
+
     const tx = await client.executeTransactionBlock({
       transactionBlock: sponsoredResponse.txBytes,
       signature: [sponsoredResponse.signature, zkLoginSignature],

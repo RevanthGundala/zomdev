@@ -61,8 +61,11 @@ export async function GET(request: Request) {
       }
 
       const { data, error: profileError } = await getProfile();
-      if (profileError) return NextResponse.redirect(`${origin}`);
-      else if (data?.length === 0)
+      console.log("Data: ", data);
+      if (profileError) {
+        console.log("Error: ", profileError);
+        return NextResponse.redirect(`${origin}/signup`);
+      } else if (data?.length === 0 || !data)
         return NextResponse.redirect(`${origin}/signup`);
     } catch (e) {
       console.log("error: ", e);
