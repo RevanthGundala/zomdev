@@ -18,7 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { getBountyById } from "@/app/actions/contract/get/getBountyById";
 import { Button } from "@/components/ui/button";
 import { Clock4, Dot } from "lucide-react";
@@ -35,6 +35,8 @@ import {
 } from "@stripe/react-stripe-js";
 import { useStripeProduct } from "@/utils/hooks/useStripeProduct";
 import { Company, Bounty } from "@/utils/types/bounty";
+import { getProfile } from "@/app/actions/auth/getProfile";
+import { getUsers } from "@/app/actions/auth/getUsers";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
@@ -42,21 +44,41 @@ const stripePromise = loadStripe(
 
 export default function BountyId() {
   const id = useSearchParams().get("id");
-  const isOwner = true;
+  const { company } = useParams();
 
   const [submitted, setSubmitted] = useState(false);
   const [githubLink, setGithubLink] = useState("");
   const [winner, setWinner] = useState("");
-
+  const [isOwner, setIsOwner] = useState(false);
   const [bounty, setBounty] = useState<Bounty | null | undefined>(null);
-  const [company, setCompany] = useState<Company | null | undefined>(null);
-  // const { clientSecret } = useStripeProduct(id);
+  const [emails, setEmails] = useState<string[]>([]);
+
+  const { clientSecret } = useStripeProduct(id);
 
   useEffect(() => {
-    getBountyById(id).then((data) => {
-      setBounty(data?.bounty);
-      setCompany(data?.company);
-    });
+    const fetchData = async () => {
+      const { data } = await getProfile();
+      if (data?.company === company) {
+        setIsOwner(true);
+      }
+      const { data: bountyInfo } = await getBountyById(id);
+      setBounty(bountyInfo?.bounty);
+
+      const { data: users } = await getUsers();
+      const matchedEmails =
+        data.submissions && data.submissions.length > 0
+          ? (data.submissions
+              .map((address: string) => {
+                const user = users?.find((user) => user.address === address);
+                return user ? user.email : null;
+              })
+              .filter((email: string) => email !== null) as string[])
+          : [];
+
+      setEmails(matchedEmails);
+    };
+
+    fetchData();
   }, []);
 
   function handleSubmit() {
@@ -130,10 +152,14 @@ export default function BountyId() {
                   <Label className="font-semibold text-lg" htmlFor="applicants">
                     Applicants
                   </Label>
-                  <ul id="applicants">
-                    <li>Applicant 1</li>
-                    <li>Applicant 2</li>
-                    <li>Applicant 3</li>
+                  <ul>
+                    {emails && emails.length > 0 ? (
+                      emails.map((email: string, i: number) => (
+                        <li key={i}>{email}</li>
+                      ))
+                    ) : (
+                      <div>No applicants</div>
+                    )}
                   </ul>
                 </CardContent>
                 <CardContent className="space-y-3">

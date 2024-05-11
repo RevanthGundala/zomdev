@@ -11,7 +11,6 @@ type ZkLoginSessionContext = {
   zkLoginSession: string;
   setZkLoginSession: (ZkLoginSession: string) => void;
   removeZkLoginSession: () => void;
-  zkLoginSessionExists: boolean;
 };
 
 export const ZkLoginSessionContext =
@@ -30,7 +29,6 @@ export function ZkLoginSessionContextProvider({
         zkLoginSession,
         setZkLoginSession,
         removeZkLoginSession,
-        zkLoginSessionExists,
       }}
     >
       {children}
@@ -42,7 +40,7 @@ export function useZkLoginSession() {
   const context = useContext(ZkLoginSessionContext);
   if (!context) {
     throw new Error(
-      "useZkLoginSession must be used within a ZkLoginSessionContextProvider",
+      "useZkLoginSession must be used within a ZkLoginSessionContextProvider"
     );
   }
   return context;

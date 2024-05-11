@@ -5,6 +5,7 @@ import { z } from "zod";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { addCompany } from "../contract/post/addCompany";
+import { deserializeZkLoginSession } from "../contract/helpers/serde";
 
 const companySchema = z.object({
   name: z.string({
@@ -52,12 +53,15 @@ export async function signUpCompany(
     return;
   }
 
+  const { zkLoginUserAddress } = await deserializeZkLoginSession(session);
+
   const { error } = await supabase.from("Users").insert([
     {
       name: name,
       company: company,
       email: email,
       auth_email: data.user.email,
+      address: zkLoginUserAddress,
     },
   ]);
 
@@ -108,6 +112,6 @@ export async function signUpUser(formData: FormData) {
     console.error("Error signing up: ", error);
   } else {
     console.log("Sign Up successful!: ", data);
-    redirect("/login");
+    redirect("/signup/success");
   }
 }

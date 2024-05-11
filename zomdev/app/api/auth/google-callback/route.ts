@@ -1,9 +1,8 @@
-// TODO: Move to callback and encodes location in State object when Supabase fixes bug
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { createClient } from "@/utils/supabase/server";
 import { jwtDecode } from "jwt-decode";
-import { getProfile } from "@/app/actions/auth/get-profile";
+import { getProfile } from "@/app/actions/auth/getProfile";
 import { redirect } from "next/navigation";
 
 export async function GET(request: Request) {

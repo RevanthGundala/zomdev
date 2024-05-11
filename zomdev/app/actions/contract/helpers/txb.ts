@@ -18,7 +18,6 @@ export async function newZkLoginTxb(
     const { zkLoginUserAddress } = await deserializeZkLoginSession(session);
     const txb = new TransactionBlock();
     txb.setSender(zkLoginUserAddress);
-    //txb.setGasBudget(1000000);
     return txb;
   } catch (e) {
     console.log("Error: ", e);
@@ -54,7 +53,7 @@ export async function executeZkLoginTxb(
 
     if (sponsoredStatus !== "IN_FLIGHT") {
       // TODO: Refund the gas station
-      console.log("Sponsored Tx failed");
+      console.log("Sponsored Tx failed - refund the gas station");
     }
 
     const { signature: userSignature } = await TransactionBlock.from(

@@ -9,7 +9,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { LogOut, User, BookHeart } from "lucide-react";
+import { LogOut, User, BookHeart, SquarePen } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,7 +29,7 @@ import { useAuth } from "@/utils/hooks/useAuth";
 export default function Navbar() {
   const { removeZkLoginSession } = useZkLoginSession();
   const { removeZkLoginState } = useZkLoginState();
-  const { isAuthenticated } = useAuth();
+  const { data, isAuthenticated } = useAuth();
   return (
     <NavigationMenu className="min-w-full fixed top-0 z-50 bg-white">
       <NavigationMenuList className="flex space-x-6 px-20 py-10 items-center">
@@ -70,10 +70,12 @@ export default function Navbar() {
                   <User className="mr-2 h-4 w-4" />
                   <Link href="/profile">Profile</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <BookHeart className="mr-2 h-4 w-4" />
-                  <Link href="/bounties/create">Create Bounty</Link>
-                </DropdownMenuItem>
+                {data && data.company && (
+                  <DropdownMenuItem>
+                    <SquarePen className="mr-2 h-4 w-4" />
+                    <Link href="/bounties/create">Create Bounty</Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem>
                   <BookHeart className="mr-2 h-4 w-4" />
                   <Link href="/bounties/view">My Bounties</Link>
@@ -97,7 +99,7 @@ export default function Navbar() {
         ) : (
           <>
             <NavigationMenuItem className="flex">
-              <Link href="/signup" legacyBehavior passHref>
+              <Link href="/login" legacyBehavior passHref>
                 <NavigationMenuLink
                   className={[
                     "bg-black text-white",

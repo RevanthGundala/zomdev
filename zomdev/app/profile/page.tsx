@@ -10,23 +10,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { CardContent, Card, CardHeader } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Link from "next/link";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { getProfile } from "../actions/auth/get-profile";
+import DeleteAccount from "@/components/DeleteAccountComponent";
+import { updateProfile } from "../actions/forms/updateProfile";
+import { getProfile } from "../actions/auth/getProfile";
 
 export default async function Profile() {
-  await getProfile();
-
+  const { data } = await getProfile();
   return (
     <div>
       <Navbar />
@@ -51,31 +40,40 @@ export default async function Profile() {
           </div>
         </header> */}
         <header className="text-4xl font-bold px-2">Profile</header>
-        <div className="space-y-8">
+        <form className="space-y-8" action={updateProfile}>
           <Card>
             <CardContent className="space-y-6 py-5">
               <div className="space-y-2">
                 <Label htmlFor="name">Name</Label>
-                <Input id="name" placeholder="E.g. Jane Doe" />
+                <Input
+                  id="name"
+                  placeholder={data?.name || "E.g. Jane Doe"}
+                  name="name"
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" placeholder="E.g. jane@example.com" />
-              </div>
-              <div className="space-y-2">
-                <Label>Biography</Label>
-                <Textarea
-                  className="mt-1"
-                  id="bio"
-                  placeholder="Enter your bio"
-                  style={{
-                    minHeight: "100px",
-                  }}
+                <Input
+                  id="email"
+                  placeholder={data?.email || "E.g. test@gmail.com"}
+                  name="email"
                 />
               </div>
+              {data.company && (
+                <div className="space-y-2">
+                  <Label htmlFor="company">Company</Label>
+                  <Input
+                    id="company"
+                    placeholder={data?.company || "E.g. Acme Corp"}
+                    name="company"
+                  />
+                </div>
+              )}
             </CardContent>
             <div className="p-6">
-              <Button>Save</Button>
+              <Button type="submit" className="hover:cursor-pointer">
+                Save
+              </Button>
             </div>
           </Card>
 
@@ -85,36 +83,9 @@ export default async function Profile() {
             </CardHeader>
             <ConnectedAccounts />
           </Card> */}
-        </div>
+        </form>
         <div className="p-6">
-          <Link
-            href="/delete-account"
-            className="border-2 border-red-400 bg-white hover:bg-red-400"
-          >
-            Delete Account
-          </Link>
-          {/* <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button className="border-2 border-red-400 bg-white hover:bg-red-400">
-                Delete Account
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your account and remove your data from our servers.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={deleteAccount}>
-                  Continue
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog> */}
+          <DeleteAccount />
         </div>
       </div>
       <Footer />

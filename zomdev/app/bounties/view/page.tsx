@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { getBounties } from "@/app/actions/contract/get/getBounties";
 import BountyComponent from "@/components/BountyComponent";
 import { Bounty, BountyInfo } from "@/utils/types/bounty";
-import { getProfile } from "@/app/actions/auth/get-profile";
+import { getProfile } from "@/app/actions/auth/getProfile";
 
 export default async function View() {
   const { data } = await getProfile();

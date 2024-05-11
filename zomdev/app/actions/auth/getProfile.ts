@@ -12,9 +12,10 @@ export async function getProfile() {
   const { data, error } = await supabase
     .from("Users")
     .select("*")
-    .eq("auth_email", userData?.user?.email);
+    .eq("auth_email", userData?.user?.email)
+    .single();
 
   if (error) return { data: null, error: "Error getting user db data" };
 
-  return { data: data[0], error: null };
+  return { data: data, error: null };
 }

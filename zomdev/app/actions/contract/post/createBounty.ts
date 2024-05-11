@@ -10,7 +10,6 @@ import {
   deserializeZkLoginSession,
   deserializeZkLoginState,
 } from "../helpers/serde";
-import { createClient } from "@/utils/supabase/server";
 
 export async function createBounty(
   state: string,
@@ -41,9 +40,7 @@ export async function createBounty(
         txb.pure.string(deadline),
       ],
     });
-    const { zkLoginUserAddress, inputs } = await deserializeZkLoginSession(
-      session
-    );
+    const { inputs } = await deserializeZkLoginSession(session);
     const { maxEpoch, ephemeralKey } = await deserializeZkLoginState(state);
     const { bytes, signature: userSignature } = await txb.sign({
       client,
@@ -59,6 +56,9 @@ export async function createBounty(
       transactionBlock: bytes,
       signature: zkLoginSignature,
       requestType: "WaitForLocalExecution",
+      options: {
+        showEvents: true,
+      },
     });
     // const gaslessPayloadBase64 = await buildGaslessTransactionBytes({
     //   sui: client,
@@ -78,6 +78,7 @@ export async function createBounty(
     //     });
     //   },
     // });
+    // console.log("Gasless Payload: ", gaslessPayloadBase64);
 
     // const tx = await executeZkLoginTxb(
     //   gaslessPayloadBase64,
@@ -86,7 +87,11 @@ export async function createBounty(
     //   session
     // );
     console.log("Tx: ", tx);
-    return { data: tx, error: null };
+    // Ensure `tx.events` is not `null` or `undefined` before accessing `[0]`
+
+    const event = tx.events ? tx.events[0] : null;
+    const data = event ? (event as any).parsedJson.id : null;
+    return { data, error: null };
   } catch (error) {
     console.error("Error creating bounty:", error);
     return { data: null, error: "Error creating bounty" };

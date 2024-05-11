@@ -1,4 +1,3 @@
-"use server";
 import {
   Ed25519Keypair,
   Ed25519KeypairData,

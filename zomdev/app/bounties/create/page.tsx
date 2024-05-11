@@ -24,7 +24,7 @@ import { ToastAction } from "@/components/ui/toast";
 import { useZkLoginState } from "@/utils/contexts/zkLoginState";
 import { useZkLoginSession } from "@/utils/contexts/zkLoginSession";
 import { useZkp } from "@/utils/hooks/useZkp";
-import { getProfile } from "@/app/actions/auth/get-profile";
+import { getProfile } from "@/app/actions/auth/getProfile";
 type ValuePiece = Date | null;
 
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -43,7 +43,7 @@ export default function Create() {
 
   async function publish() {
     const { data } = await getProfile();
-    const { error } = await createBounty(
+    const { data: id, error } = await createBounty(
       zkLoginState,
       zkLoginSession,
       data?.company,
@@ -57,15 +57,16 @@ export default function Create() {
     if (error) {
       return;
     }
-    const id = "1";
-    // const priceId = await createProduct(id, title, reward);
+    const priceId = await createProduct(id, title, reward);
     toast({
       title: "Success!",
       description: "Your bounty has been created successfully.",
       action: (
         <ToastAction
           altText="View Bounty"
-          onClick={() => router.push(`/bounty/${id}`)}
+          onClick={() =>
+            router.push(`/bounties/${data?.company}/bounty?id=${id}`)
+          }
         >
           View Bounty
         </ToastAction>
