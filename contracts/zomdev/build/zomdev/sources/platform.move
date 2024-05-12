@@ -1,63 +1,26 @@
-
-module zomdev::platform { 
-    use sui::object_table::{Self, ObjectTable};
-    use std::string::String;
+module zomdev::platform {
+    // === Imports ===
     use zomdev::version;
+    use sui::package;
 
-    public struct Platform has key {
+    // === Structs ===
+    public struct Platform has key, store {
         id: UID,
-        companies: ObjectTable<String, Company>,
         version: u64,
     }
 
-    public struct Company has key, store {
-       id: UID,
-       reputation: u64,
-       version: u64,
-    } 
-
-    fun init(ctx: &mut TxContext) {
-        init_internal(ctx);
-    }
-
-    fun init_internal(ctx: &mut TxContext) {
-        transfer::share_object(
-            Platform {
-                id: object::new(ctx),
-                companies: object_table::new(ctx),
-                version: version::version(),
-            }
-        )
-    }
-
-   // version "new" in case of upgrade
-    public fun new_company_v1(self: &mut Platform, name: String, ctx: &mut TxContext) {
-        new_company_internal(self, name, ctx);
-    }
-
-    fun new_company_internal(self: &mut Platform, name: String, ctx: &mut TxContext) {
-        let company = Company {
-            id: object::new(ctx),
-            reputation: 0,
-            version: version::version(),
-        };
-        self.companies.add(name, company);
-    }
-
-    public fun companies(self: &Platform): &ObjectTable<String, Company> {
-        &self.companies
-    }
-
-    public fun companies_mut(self: &mut Platform): &mut ObjectTable<String, Company> {
-        &mut self.companies
-    }
-
-    public fun company_id(company: &Company): &UID {
-        &company.id
-    }
-
-    public fun company_mut_id(company: &mut Company): &mut UID {
-        &mut company.id
-    }
+    public struct AdminCap has key { id: UID }
     
+    public struct PLATFORM has drop { } 
+
+    // === Init ===
+    fun init(otw: PLATFORM, ctx: &mut TxContext) {
+        package::claim_and_keep(otw, ctx);
+        transfer::transfer(AdminCap { id: object::new(ctx) }, ctx.sender());
+        transfer::public_share_object(Platform { id: object::new(ctx), version: version::version() })
+    }
+
+    // === Public-View Functions ===
+    public fun uid(self: &Platform): &UID { &self.id }
+    public fun uid_mut(self: &mut Platform): &mut UID { &mut self.id }
 }

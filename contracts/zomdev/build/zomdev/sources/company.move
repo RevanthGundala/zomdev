@@ -17,7 +17,7 @@ module zomdev::company {
     public fun uid_mut(self: &mut Company): &mut UID { &mut self.id }
 
     // === Public-Package Functions ===
-    public(package) fun new(platform: &mut Platform, name: String, ctx: &mut TxContext) {  
+    public(package) fun new_v1(platform: &mut Platform, name: String, ctx: &mut TxContext) {  
         new_internal(platform, name, ctx);
     }
 
