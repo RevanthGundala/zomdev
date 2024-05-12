@@ -11,19 +11,19 @@ import { GasStationClient } from "@shinami/clients";
 
 import { deserializeZkLoginSession, deserializeZkLoginState } from "./serde";
 
-export async function newZkLoginTxb(
-  session: string
-): Promise<TransactionBlock> {
-  try {
-    const { zkLoginUserAddress } = await deserializeZkLoginSession(session);
-    const txb = new TransactionBlock();
-    txb.setSender(zkLoginUserAddress);
-    return txb;
-  } catch (e) {
-    console.log("Error: ", e);
-    throw new Error("Failed to create new zkLoginTxb");
-  }
-}
+// export async function newZkLoginTxb(
+//   session: string
+// ): Promise<TransactionBlock> {
+//   try {
+//     const { zkLoginUserAddress } = await deserializeZkLoginSession(session);
+//     const txb = new TransactionBlock();
+//     txb.setSender(zkLoginUserAddress);
+//     return txb;
+//   } catch (e) {
+//     console.log("Error: ", e);
+//     throw new Error("Failed to create new zkLoginTxb");
+//   }
+// }
 
 export async function executeZkLoginTxb(
   gaslessPayloadBase64: string,
@@ -44,8 +44,6 @@ export async function executeZkLoginTxb(
       zkLoginUserAddress
     );
 
-    console.log("Sponsored Response: ", sponsoredResponse);
-
     const sponsoredStatus =
       await gasStationClient.getSponsoredTransactionBlockStatus(
         sponsoredResponse.txDigest
@@ -62,15 +60,11 @@ export async function executeZkLoginTxb(
       signer: ephemeralKey,
     });
 
-    console.log("User Signature: ", userSignature);
-
     const zkLoginSignature: SerializedSignature = getZkLoginSignature({
       inputs,
       maxEpoch,
       userSignature,
     });
-
-    console.log("ZkLogin Signature: ", zkLoginSignature);
 
     const tx = await client.executeTransactionBlock({
       transactionBlock: sponsoredResponse.txBytes,

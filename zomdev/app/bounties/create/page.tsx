@@ -16,7 +16,7 @@ import React, { useState } from "react";
 import DatePicker from "react-date-picker";
 import "react-date-picker/dist/DatePicker.css";
 import "react-calendar/dist/Calendar.css";
-import { createBounty } from "@/app/actions/contract/post/createBounty";
+import { createBounty } from "@/app/actions/contract/createBounty";
 import { createProduct } from "@/app/actions/stripe/create-product";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";

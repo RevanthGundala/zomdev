@@ -4,7 +4,7 @@
 import { z } from "zod";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import { addCompany } from "../contract/post/addCompany";
+import { addCompany } from "../contract/addCompany";
 import { deserializeZkLoginSession } from "../contract/helpers/serde";
 
 const companySchema = z.object({

@@ -1,7 +1,11 @@
 import dotenv from "dotenv";
 import { Ed25519Keypair } from "@mysten/sui.js/keypairs/ed25519";
 import { fromHEX, SUI_DECIMALS } from "@mysten/sui.js/utils";
-import { getFullnodeUrl, SuiClient } from "@mysten/sui.js/client";
+import {
+  getFullnodeUrl,
+  SuiClient,
+  SuiObjectChange,
+} from "@mysten/sui.js/client";
 import path, { dirname } from "path";
 import { execSync } from "child_process";
 import { fileURLToPath } from "url";
@@ -56,25 +60,33 @@ async function main() {
   });
 
   console.log("Object changes: ", objectChanges);
-  const published_change = objectChanges?.find(
-    (change) => change.type === "published"
-  );
-  if (published_change?.type !== "published") {
-    throw new Error("Could not find published change");
+
+  const packageId = (objectChanges as any)?.find(
+    (change: any) => change.type === "published"
+  )?.packageId;
+  if (!packageId) {
+    throw new Error("Could not find packageId");
   }
-
-  const created_change = objectChanges?.find(
-    (change: any) =>
-      change.objectType === `${published_change.packageId}::core::Platform`
-  );
-
-  if (created_change?.type !== "created") {
-    throw new Error("Could not find created change");
+  let publisher, upgradeCap, adminCap, platform;
+  for (const change of objectChanges!) {
+    if (change.type === "created") {
+      if (change.objectType === `0x2::package::Publisher`)
+        publisher = change.objectId;
+      else if (change.objectType === `0x2::package::UpgradeCap`)
+        upgradeCap = change.objectId;
+      else if (change.objectType === `${packageId}::platform::AdminCap`)
+        adminCap = change.objectId;
+      else if (change.objectType === `${packageId}::platform::Platform`)
+        platform = change.objectId;
+    }
   }
 
   const deployed_address = {
-    PACKAGE_ID: published_change.packageId,
-    PLATFORM: created_change.objectId,
+    PACKAGE_ID: packageId,
+    PUBLISHER: publisher,
+    UPGRADE_CAP: upgradeCap,
+    ADMIN_CAP: adminCap,
+    PLATFORM: platform,
   };
 
   const deployed_path = path.join(

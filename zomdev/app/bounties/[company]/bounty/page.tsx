@@ -19,7 +19,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useParams, useSearchParams } from "next/navigation";
-import { getBountyById } from "@/app/actions/contract/get/getBountyById";
+import { getBountyById } from "@/app/actions/contract/getBountyById";
 import { Button } from "@/components/ui/button";
 import { Clock4, Dot } from "lucide-react";
 import { Input } from "@/components/ui/input";

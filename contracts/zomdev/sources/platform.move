@@ -20,7 +20,13 @@ module zomdev::platform {
         transfer::public_share_object(Platform { id: object::new(ctx), version: version::version() })
     }
 
-    // === Public-View Functions ===
-    public fun uid(self: &Platform): &UID { &self.id }
-    public fun uid_mut(self: &mut Platform): &mut UID { &mut self.id }
+    // === Public-Package Functions ===
+    public(package) fun uid(self: &Platform): &UID { &self.id }
+    public(package) fun uid_mut(self: &mut Platform): &mut UID { &mut self.id }
+ 
+    // === Private Functions ===
+    entry fun migrate(_: &AdminCap, platform: &mut Platform) { 
+        // TODO: change dynamic fields
+        platform.version = version::version();
+    }
 }

@@ -6,7 +6,7 @@ import {
   getFullnodeUrl,
 } from "@mysten/sui.js/client";
 import { Bounty, BountyInfo } from "@/utils/types/bounty";
-import ADDRESSES from "../../../../deployed_addresses.json";
+import ADDRESSES from "../../../deployed_addresses.json";
 
 export async function getBounties(companyName?: string) {
   const { PLATFORM } = ADDRESSES;
@@ -17,11 +17,19 @@ export async function getBounties(companyName?: string) {
     options: { showContent: true },
   });
 
+  console.log("object", object.data?.content as any);
+
   const companies = await client.getDynamicFields({
-    parentId: (object.data?.content as any)?.fields.companies.fields.id
-      .id as string,
+    parentId: PLATFORM,
   });
 
+  console.log("companies", companies.data);
+
+  const company = await client.getDynamicFields({
+    parentId: companies.data[0].objectId,
+  });
+
+  console.log("company", company.data);
   const filteredCompanies = companyName
     ? companies?.data.filter(
         (company: any) => company.name.value === companyName

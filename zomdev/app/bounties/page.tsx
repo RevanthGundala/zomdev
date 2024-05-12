@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import BountyComponent from "@/components/BountyComponent";
 import Footer from "@/components/Footer";
-import { getBounties } from "../actions/contract/get/getBounties";
+import { getBounties } from "../actions/contract/getBounties";
 import { Bounty, BountyInfo } from "@/utils/types/bounty";
 
 export default async function Bounties() {
@@ -25,9 +25,7 @@ export default async function Bounties() {
               />
             ))
           ) : (
-            <div className="text-center text-gray-500">
-              You have no bounties.
-            </div>
+            <div className="text-center text-gray-500">No bounties.</div>
           )}
         </section>
       </div>
