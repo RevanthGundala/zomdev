@@ -3,5 +3,5 @@ module zomdev::version{
     const VERSION: u64 = 1;
 
     // === Public-View Functions ===
-    public fun version(): u64 { VERSION } 
+    public fun current_version(): u64 { VERSION } 
 }

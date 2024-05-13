@@ -1,6 +1,6 @@
 module zomdev::bounty { 
     // === Imports ===
-    use zomdev::{company, platform::Platform};
+    use zomdev::{company, platform::{Platform, Self}};
     use std::string::String;
     use sui::{dynamic_field as df, event};
  
@@ -19,8 +19,6 @@ module zomdev::bounty {
 
     public struct BountyPostedV1 has copy, drop { id: ID }
 
-    // === Public-View Functions ===
-
     // === Public-Package Functions ===
     public(package) fun uid(self: &Bounty): &UID { &self.id } 
     public(package) fun uid_mut(self: &mut Bounty): &mut UID { &mut self.id }
@@ -37,20 +35,7 @@ module zomdev::bounty {
         deadline: String,
         ctx: &mut TxContext
         ) {
-        new_internal(platform, company_name, title, description, requirements, reward, created_at, deadline, ctx);
-    } 
-
-    fun new_internal(
-        platform: &mut Platform,
-        company_name: String,
-        title: String,
-        description: String,
-        requirements: String,
-        reward: u64,
-        created_at: String,
-        deadline: String,
-        ctx: &mut TxContext
-        ) {
+        platform::assert_current_version(platform);
         let company = company::self_mut(platform, company_name);
         let mut bounty = Bounty { id: object::new(ctx) };
         let bounty_data = BountyDataV1 {
@@ -63,7 +48,7 @@ module zomdev::bounty {
             deadline,
         };
         event::emit(BountyPostedV1 { id:  object::uid_to_inner(&bounty.id) });
-        df::add(&mut bounty.id, b"data", bounty_data);
+        df::add(&mut bounty.id, b"data_v1", bounty_data);
         df::add(company::uid_mut(company), title, bounty);
-    }
+    } 
 }

@@ -31,7 +31,7 @@ type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 export default function Create() {
   const [title, setTitle] = useState("");
-  const [reward, setReward] = useState(0);
+  const [reward, setReward] = useState("");
   const [deadline, onChange] = useState<Value>(new Date());
   const [description, setDescription] = useState("");
   const [requirements, setRequirements] = useState("");
@@ -50,14 +50,14 @@ export default function Create() {
       title,
       description,
       requirements,
-      reward,
+      parseFloat(reward),
       new Date().toString(),
       deadline?.toString()
     );
     if (error) {
       return;
     }
-    const priceId = await createProduct(id, title, reward);
+    const priceId = await createProduct(id, title, parseFloat(reward));
     toast({
       title: "Success!",
       description: "Your bounty has been created successfully.",
@@ -102,7 +102,13 @@ export default function Create() {
                     <Label htmlFor="cost">Reward</Label>
                     <div className="flex items-center">
                       <DollarSign className="w-6 h-10 bg-gray-200" />
-                      <Input id="cost" placeholder="10,000" required />
+                      <Input
+                        id="cost"
+                        placeholder="10,000"
+                        value={reward}
+                        onChange={(e) => setReward(e.target.value)}
+                        required
+                      />
                     </div>
                   </div>
                   <div>
