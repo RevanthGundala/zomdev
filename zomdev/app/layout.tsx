@@ -5,6 +5,8 @@ import "./globals.css";
 import { ZkLoginSessionContextProvider } from "@/utils/contexts/zkLoginSession";
 import { ZkLoginStateContextProvider } from "@/utils/contexts/zkLoginState";
 import { Toaster } from "@/components/ui/toaster";
+import { CSPostHogProvider } from "./providers";
+import { Analytics } from "@vercel/analytics/react";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -31,6 +33,7 @@ export default function RootLayout({
       <ZkLoginSessionContextProvider>
         <html lang="en" suppressHydrationWarning className="overflow-y-auto">
           <head />
+
           <body
             className={cn(
               "min-h-screen bg-background font-sans antialiased",
@@ -39,6 +42,7 @@ export default function RootLayout({
           >
             {children}
             <Toaster />
+            <Analytics />
           </body>
         </html>
       </ZkLoginSessionContextProvider>

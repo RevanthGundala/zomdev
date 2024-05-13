@@ -2,8 +2,8 @@ module zomdev::bounty {
     // === Imports ===
     use zomdev::{company, platform::{Platform, Self}};
     use std::string::String;
-    use sui::{dynamic_field as df, event};
- 
+    use sui::{dynamic_field as df, event, vec_set::{VecSet, Self}};
+  
     // === Structs ===
     public struct Bounty has key, store { id: UID }
 
@@ -12,7 +12,7 @@ module zomdev::bounty {
         description: String,
         requirements: String,
         reward: u64,
-        submissions: vector<address>,
+        submissions: VecSet<address>,
         created_at: String,
         deadline: String,
     }
@@ -43,7 +43,7 @@ module zomdev::bounty {
             description,
             requirements,
             reward,
-            submissions: vector[],
+            submissions: vec_set::empty(),
             created_at,
             deadline,
         };
@@ -51,4 +51,15 @@ module zomdev::bounty {
         df::add(&mut bounty.id, b"data_v1", bounty_data);
         df::add(company::uid_mut(company), title, bounty);
     } 
+
+    // TODO: Implement this function
+    // entry fun submit(platform: &mut Platform) { 
+    //     // get the bounty from the company
+    //     let bounty;
+
+    //     // get the bounty data
+    //     let bounty_data;
+
+    //     bounty_data.submissions.push(ctx.sender());
+    // }
 }

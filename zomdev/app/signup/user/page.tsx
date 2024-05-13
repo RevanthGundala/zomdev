@@ -7,11 +7,20 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { signUpUser } from "@/app/actions/forms/sign-up";
+import { signUpUser } from "@/app/actions/forms/signUp";
 import { useFormStatus } from "react-dom";
+import { useZkLoginSession } from "@/utils/contexts/zkLoginSession";
+import { useZkLoginState } from "@/utils/contexts/zkLoginState";
 
 export default function SignUpUser() {
   const { pending } = useFormStatus();
+  const { zkLoginSession } = useZkLoginSession();
+  const { zkLoginState } = useZkLoginState();
+  const signUpCompanyWithZk = signUpUser.bind(
+    null,
+    zkLoginSession,
+    zkLoginState
+  );
   return (
     <section className="flex min-h-[100dvh] items-center justify-center bg-gray-100 px-4 py-12 dark:bg-gray-900">
       <div className="mx-auto w-full max-w-md space-y-6 rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
@@ -21,7 +30,7 @@ export default function SignUpUser() {
             Create your personal account to get started with our platform.
           </p>
         </div>
-        <form className="grid gap-4" action={signUpUser}>
+        <form className="grid gap-4" action={signUpCompanyWithZk}>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>

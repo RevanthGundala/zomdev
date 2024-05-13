@@ -104,7 +104,7 @@ export default function Create() {
                       <DollarSign className="w-6 h-10 bg-gray-200" />
                       <Input
                         id="cost"
-                        placeholder="10,000"
+                        placeholder="10000"
                         value={reward}
                         onChange={(e) => setReward(e.target.value)}
                         required

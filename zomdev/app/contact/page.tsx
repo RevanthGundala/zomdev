@@ -16,6 +16,7 @@ import Footer from "@/components/Footer";
 
 export default function Contact() {
   const { pending } = useFormStatus();
+
   return (
     <>
       <Navbar />

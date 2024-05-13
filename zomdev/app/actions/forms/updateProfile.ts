@@ -3,9 +3,18 @@ import { createClient } from "@/utils/supabase/server";
 import { getProfile } from "../auth/getProfile";
 import { revalidatePath } from "next/cache";
 
-export async function updateProfile(formData: FormData) {
+export async function updateProfile(
+  prevState: any,
+  formData: FormData
+): Promise<any> {
   const { data: user, error: userError } = await getProfile();
-  if (userError) return { data: null, error: "Error getting user data" };
+  if (userError)
+    return {
+      error: {
+        profile: "There was an error",
+      },
+      message: "Failed submission",
+    };
 
   const email =
     formData.get("email") !== ""
@@ -26,9 +35,17 @@ export async function updateProfile(formData: FormData) {
     .eq("id", user?.id)
     .select();
 
-  if (updatedError) return { data: null, error: "Error updating user db data" };
-
-  revalidatePath("/profile");
-  console.log("Profile updated", updatedData);
-  return { data: updatedData, error: null };
+  if (updatedError) {
+    console.error("Error updating profile: ", updatedError);
+    return {
+      error: {
+        profile: "There was an error",
+      },
+      message: "Failed submission",
+    };
+  } else {
+    console.log("Successfully updated profile");
+    revalidatePath("/profile");
+    return { error: null, message: `Successfully updated profile` };
+  }
 }

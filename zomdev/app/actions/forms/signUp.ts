@@ -67,7 +67,7 @@ export async function signUpCompany(
 
   const { error: companyError } = await addCompany(state, session, company);
 
-  if (error) {
+  if (error || companyError) {
     console.error("Error signing up: ", error);
   } else {
     redirect("/signup/success");
@@ -86,7 +86,11 @@ const userSchema = z.object({
   }),
 });
 
-export async function signUpUser(formData: FormData) {
+export async function signUpUser(
+  session: string,
+  _state: string,
+  formData: FormData
+) {
   const validatedFields = userSchema.safeParse({
     name: formData.get("name"),
     // logo: formData.get("logo"),
@@ -104,9 +108,20 @@ export async function signUpUser(formData: FormData) {
 
   // Add to db
   const supabase = createClient();
-  const { data, error } = await supabase
-    .from("Users")
-    .insert([{ name: name }, { email: email }]);
+  const { data, error: dbError } = await supabase.auth.getUser();
+  if (dbError) {
+    console.error("Error getting user auth data: ", dbError);
+    return;
+  }
+  const { zkLoginUserAddress } = await deserializeZkLoginSession(session);
+  const { error } = await supabase.from("Users").insert([
+    {
+      name: name,
+      email: email,
+      auth_email: data.user.email,
+      address: zkLoginUserAddress,
+    },
+  ]);
 
   if (error) {
     console.error("Error signing up: ", error);

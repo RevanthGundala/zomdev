@@ -2,8 +2,8 @@
 
 // Validate form data server side
 import { z } from "zod";
-import { Resend } from "resend";
-import { revalidatePath } from "next/cache";
+import emailjs from "@emailjs/nodejs";
+import { redirect } from "next/navigation";
 
 const schema = z.object({
   name: z.string({
@@ -36,24 +36,27 @@ export async function contactUs(formData: FormData) {
   }
 
   const { name, email, subject, message } = validatedFields.data;
-  const resend = new Resend(process.env.RESEND_API_KEY!);
+  const templateParams = {
+    name: name,
+    subject: subject,
+    email: email,
+    message: message,
+  };
 
   // Send email
-  const { data, error } = await resend.emails.send({
-    from: `${name} <${email}>`,
-    to: [process.env.EMAIL!],
-    subject: subject,
-    react: message,
-  });
-
-  if (error) {
-    console.error("Error sending email: ", error);
-  } else {
-    console.log("Email sent successfully!: ", data);
-    formData.set("name", "");
-    formData.set("email", "");
-    formData.set("subject", "");
-    formData.set("message", "");
-    revalidatePath("/contact");
+  try {
+    const res = await emailjs.send(
+      process.env.EMAIL_JS_SERVICE_ID!,
+      process.env.EMAIL_JS_TEMPLATE_ID!,
+      templateParams,
+      {
+        publicKey: process.env.EMAIL_JS_PUBLIC_KEY!,
+        privateKey: process.env.EMAIL_JS_SECRET_KEY!,
+      }
+    );
+    console.log("Email sent", res);
+  } catch (error) {
+    console.error("Failed to send email", error);
   }
+  redirect("/contact/success");
 }

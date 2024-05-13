@@ -7,8 +7,12 @@ import {
 } from "@mysten/sui.js/client";
 import { Bounty, BountyInfo } from "@/utils/types/bounty";
 import ADDRESSES from "../../../deployed_addresses.json";
+import { getProfile } from "../auth/getProfile";
 
 export async function getBounties(companyName?: string) {
+  if (!companyName) {
+    return await getBountiesForUser();
+  }
   const { PLATFORM } = ADDRESSES;
   const client = new SuiClient({ url: getFullnodeUrl("testnet") });
 
@@ -73,4 +77,18 @@ export async function getBounties(companyName?: string) {
   ).then((results) => results.flat());
 
   return { data: bounties, error: null };
+}
+
+// get submissions for a bounty and check if the user has submitted
+async function getBountiesForUser() {
+  const { data, error } = await getProfile();
+  if (error) {
+    return { data: null, error };
+  }
+
+  // const bounties = [];
+  // const user_bounties = bounties.map((bounty) =>
+  //   bounty.submissions.includes(data?.address)
+  // );
+  return { data: null, error: null };
 }
