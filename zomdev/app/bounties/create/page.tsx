@@ -16,15 +16,15 @@ import React, { useState } from "react";
 import DatePicker from "react-date-picker";
 import "react-date-picker/dist/DatePicker.css";
 import "react-calendar/dist/Calendar.css";
-import { createBounty } from "@/app/actions/contract/createBounty";
+import { addBounty } from "@/app/actions/contract/addBounty";
 import { createProduct } from "@/app/actions/stripe/create-product";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useZkLoginState } from "@/utils/contexts/zkLoginState";
 import { useZkLoginSession } from "@/utils/contexts/zkLoginSession";
-import { useZkp } from "@/utils/hooks/useZkp";
 import { getProfile } from "@/app/actions/auth/getProfile";
+
 type ValuePiece = Date | null;
 
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -43,7 +43,7 @@ export default function Create() {
 
   async function publish() {
     const { data } = await getProfile();
-    const { data: id, error } = await createBounty(
+    const { data: id, error } = await addBounty(
       zkLoginState,
       zkLoginSession,
       data?.company,
@@ -54,10 +54,13 @@ export default function Create() {
       new Date().toString(),
       deadline?.toString()
     );
-    if (error) {
-      return;
-    }
-    const priceId = await createProduct(id, title, parseFloat(reward));
+    if (error) router.push(`/error?message=${error}`);
+    const { error: productError } = await createProduct(
+      id,
+      title,
+      parseFloat(reward)
+    );
+    if (productError) router.push(`/error?message=${productError}`);
     toast({
       title: "Success!",
       description: "Your bounty has been created successfully.",

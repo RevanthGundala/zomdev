@@ -1,94 +1,109 @@
 "use server";
 
-import {
-  DynamicFieldInfo,
-  SuiClient,
-  getFullnodeUrl,
-} from "@mysten/sui.js/client";
-import { Bounty, BountyInfo } from "@/utils/types/bounty";
-import ADDRESSES from "../../../deployed_addresses.json";
-import { getProfile } from "../auth/getProfile";
+import { DynamicFieldInfo } from "@mysten/sui.js/client";
+import { getSuiClient } from "./helpers/getSuiClient";
+import { getCompanies } from "./getCompany";
+import { error } from "console";
 
 export async function getBounties(companyName?: string) {
-  if (!companyName) {
-    return await getBountiesForUser();
-  }
-  const { PLATFORM } = ADDRESSES;
-  const client = new SuiClient({ url: getFullnodeUrl("testnet") });
-
-  const object = await client.getObject({
-    id: PLATFORM,
-    options: { showContent: true },
-  });
-
-  console.log("object", object.data?.content as any);
-
-  const companies = await client.getDynamicFields({
-    parentId: PLATFORM,
-  });
-
-  console.log("companies", companies.data);
-
-  const company = await client.getDynamicFields({
-    parentId: companies.data[0].objectId,
-  });
-
-  console.log("company", company.data);
-  const filteredCompanies = companyName
-    ? companies?.data.filter(
-        (company: any) => company.name.value === companyName
+  // if (!companyName) {
+  //   return await getBountiesForUser();
+  // }
+  try {
+    const companies = await getCompanies();
+    const bounties = await Promise.all(
+      companies.map(
+        async (company: any) =>
+          await getBountyData(company.bounties, company.parentId)
       )
-    : companies?.data;
+    );
 
-  const bounties: BountyInfo[] = await Promise.all(
-    filteredCompanies.map(async (company: any) => {
-      // Fetch dynamic fields for the company
-      const dynamicFields = await client.getDynamicFields({
-        parentId: company.objectId,
-      });
+    // Remove the 'bounties' and 'parentId' fields from the companies array
+    const cleanedCompanies = companies.map(({ companyData, companyId }) => {
+      // Destructure to remove completed_payouts and get the rest of the properties
+      const { completed_payouts, ...rest } = companyData;
 
-      // Fetch each bounty object for the dynamic fields
-      const bountiesForCompany = await Promise.all(
-        dynamicFields.data.map(async (bountyObject: any) => {
-          const bountyData = await client.getObject({
-            id: bountyObject.objectId,
-            options: { showContent: true },
-          });
-
-          return (bountyData.data?.content as any).fields;
-        })
-      );
-
-      // Flatten the array and map to the desired structure
-      return bountiesForCompany.flat().map((bounty: any) => ({
-        bounty: {
-          id: bounty.id.id,
-          title: bounty.title,
-          description: bounty.description,
-          requirements: bounty.requirements,
-          reward: parseFloat(bounty.reward),
-          submissions: bounty.submissions,
-          createdAt: bounty.created_at,
-          deadline: bounty.deadline,
+      return {
+        companyId,
+        companyData: {
+          ...rest,
+          completedPayouts: completed_payouts,
         },
-        company: company.name.value as string,
-      }));
-    })
-  ).then((results) => results.flat());
+      };
+    });
 
-  return { data: bounties, error: null };
+    // Merge the cleaned companies array with the nested bounties array
+    const result = cleanedCompanies.map((company, index) => ({
+      ...company,
+      bounties: bounties[index].map(({ bountyId, bountyData }) => {
+        const { created_at, submissions, ...restBountyData } = bountyData;
+
+        return {
+          bountyId,
+          bountyData: {
+            ...restBountyData,
+            createdAt: created_at,
+            submissions: submissions.fields.contents,
+          },
+        };
+      }),
+    }));
+
+    console.dir(result, { depth: null });
+    return { data: result, error: null };
+  } catch (error) {
+    console.error("Error getting bounties:", error);
+    return { data: null, error: "Error getting bounties" };
+  }
 }
 
-// get submissions for a bounty and check if the user has submitted
-async function getBountiesForUser() {
-  const { data, error } = await getProfile();
-  if (error) {
-    return { data: null, error };
-  }
+export async function getBountyById(
+  bountyId: string | null,
+  companyName: string | null
+) {
+  if (!bountyId || !companyName)
+    return { data: null, error: "Bounty/Company not found" };
+  const { data: bountyData } = await getBounties();
+  const res = bountyData?.find((info) => info.companyData.name === companyName);
 
-  // const bounties = [];
-  // const user_bounties = bounties.map((bounty) =>
-  //   bounty.submissions.includes(data?.address)
-  // );
-  return { data: null, error: null };
+  const bounty = res?.bounties.find((bounty) => bounty.bountyId === bountyId);
+  const company = { companyId: res?.companyId, companyData: res?.companyData };
+  const data = { company, bounty };
+  return { data, error: null };
+}
+
+async function getBountyData(
+  bountyObjects: DynamicFieldInfo[],
+  parentId: string
+) {
+  if (!bountyObjects) return [];
+  const bountyData = await Promise.all(
+    bountyObjects.map(
+      async (bountyObject) => await getSingleBountyData(bountyObject, parentId)
+    )
+  );
+  return bountyData;
+}
+
+// export async function getBounty
+async function getSingleBountyData(
+  bountyObject: DynamicFieldInfo,
+  parentId: string
+) {
+  const client = await getSuiClient();
+  const bountyObjectData = await client.getDynamicFieldObject({
+    name: bountyObject.name,
+    parentId,
+  });
+  const { name: bountyId, value } = (bountyObjectData.data?.content as any)
+    .fields;
+  const bountyDataDynamicFields = (
+    await client.getDynamicFields({ parentId: value.fields.id.id })
+  ).data;
+  const bounty = await client.getDynamicFieldObject({
+    name: bountyDataDynamicFields[0].name,
+    parentId: value.fields.id.id,
+  });
+  const bountyData = (bounty.data?.content as any).fields.value.fields;
+  return { bountyData, bountyId };
 }

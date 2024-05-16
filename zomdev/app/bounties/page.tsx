@@ -2,11 +2,9 @@ import Navbar from "@/components/Navbar";
 import BountyComponent from "@/components/BountyComponent";
 import Footer from "@/components/Footer";
 import { getBounties } from "../actions/contract/getBounties";
-import { Bounty, BountyInfo } from "@/utils/types/bounty";
 
 export default async function Bounties() {
-  const { data: bounties } = await getBounties();
-
+  const { data } = await getBounties();
   return (
     <>
       <Navbar />
@@ -16,14 +14,12 @@ export default async function Bounties() {
           View different bounties from companies
         </p>
         <section className="flex flex-col space-y-4">
-          {bounties && bounties.length > 0 ? (
-            bounties.map((bountyInfo: BountyInfo, index: number) => (
-              <BountyComponent
-                key={index}
-                bounty={bountyInfo.bounty}
-                company={bountyInfo.company}
-              />
-            ))
+          {data ? (
+            data.map((company) =>
+              company.bounties.map((bounty) => (
+                <BountyComponent company={company} bounty={bounty} />
+              ))
+            )
           ) : (
             <div className="text-center text-gray-500">No bounties.</div>
           )}

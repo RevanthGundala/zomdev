@@ -2,24 +2,16 @@
 import {
   CardContent,
   Card,
-  CardDescription,
   CardHeader,
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useParams, useSearchParams } from "next/navigation";
-import { getBountyById } from "@/app/actions/contract/getBountyById";
 import { Button } from "@/components/ui/button";
 import { Clock4, Dot } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -29,14 +21,13 @@ import SuccessPopup from "@/components/popup/success";
 import Footer from "@/components/Footer";
 import { useEffect, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import {
-  EmbeddedCheckoutProvider,
-  EmbeddedCheckout,
-} from "@stripe/react-stripe-js";
 import { useStripeProduct } from "@/utils/hooks/useStripeProduct";
-import { Company, Bounty } from "@/utils/types/bounty";
+import { Company, Bounty } from "@/utils/types/contract";
 import { getProfile } from "@/app/actions/auth/getProfile";
 import { getUsers } from "@/app/actions/auth/getUsers";
+import { createCheckoutSession } from "@/app/actions/stripe/checkout-session";
+import { getPriceId } from "@/app/actions/stripe/get-priceId";
+import { getBountyById } from "@/app/actions/contract/getBounties";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
@@ -44,30 +35,31 @@ const stripePromise = loadStripe(
 
 export default function BountyId() {
   const id = useSearchParams().get("id");
-  const { company } = useParams();
+  const { company: companyName } = useParams();
 
   const [submitted, setSubmitted] = useState(false);
   const [githubLink, setGithubLink] = useState("");
   const [winner, setWinner] = useState("");
   const [isOwner, setIsOwner] = useState(false);
+  const [company, setCompany] = useState<Company | null | undefined>(null);
   const [bounty, setBounty] = useState<Bounty | null | undefined>(null);
   const [emails, setEmails] = useState<string[]>([]);
 
-  const { clientSecret } = useStripeProduct(id);
-
   useEffect(() => {
     const fetchData = async () => {
-      const { data } = await getProfile();
-      if (data?.company === company) {
-        setIsOwner(true);
-      }
-      const { data: bountyInfo } = await getBountyById(id);
-      setBounty(bountyInfo?.bounty);
+      const { data: profileData } = await getProfile();
+      if (profileData?.company === companyName) setIsOwner(true);
+
+      const { data } = await getBountyById(id, companyName as string | null);
+      setCompany(data?.company);
+      setBounty(data?.bounty);
 
       const { data: users } = await getUsers();
+      const submissions = data?.bounty?.bountyData.submissions;
+      // match emails to zkLoginAddress
       const matchedEmails =
-        data.submissions && data.submissions.length > 0
-          ? (data.submissions
+        submissions && submissions.length > 0
+          ? (submissions
               .map((address: string) => {
                 const user = users?.find((user) => user.address === address);
                 return user ? user.email : null;
@@ -80,10 +72,6 @@ export default function BountyId() {
 
     fetchData();
   }, []);
-
-  function handleSubmit() {
-    setSubmitted(true);
-  }
 
   return (
     <>
@@ -136,9 +124,9 @@ export default function BountyId() {
                 <CardFooter>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="outline" onClick={handleSubmit}>
+                      {/* <Button variant="outline" onClick={handleSubmit}>
                         Submit
-                      </Button>
+                      </Button> */}
                     </AlertDialogTrigger>
                     <AlertDialogContent hidden={!submitted}>
                       <SuccessPopup />
@@ -176,25 +164,15 @@ export default function BountyId() {
                   />
                 </CardContent>
                 <CardFooter>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline" onClick={handleSubmit}>
-                        Submit
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent hidden={!submitted}>
-                      {clientSecret && (
-                        <div id="checkout">
-                          <EmbeddedCheckoutProvider
-                            stripe={stripePromise}
-                            options={{ clientSecret }}
-                          >
-                            <EmbeddedCheckout />
-                          </EmbeddedCheckoutProvider>
-                        </div>
-                      )}
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <Button
+                    variant="outline"
+                    onClick={async () => {
+                      let p = await getPriceId(id!);
+                      await createCheckoutSession(p);
+                    }}
+                  >
+                    Submit
+                  </Button>
                 </CardFooter>
               </>
             )}

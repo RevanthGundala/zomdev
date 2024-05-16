@@ -1,12 +1,11 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import Stripe from "stripe";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-export async function createCheckoutSession(priceId: string): Promise<string> {
+export async function createCheckoutSession(priceId: string) {
   const session = await stripe.checkout.sessions.create({
-    ui_mode: "embedded",
-    payment_method_types: ["card"],
     line_items: [
       {
         price: priceId,
@@ -14,10 +13,15 @@ export async function createCheckoutSession(priceId: string): Promise<string> {
       },
     ],
     mode: "payment",
-    return_url: `http://localhost:3000/payments?session_id={CHECKOUT_SESSION_ID}`,
+    success_url: `${
+      process.env.VERCEL_URL ?? "http://localhost:3000"
+    }/payments/success`,
+    cancel_url: `${
+      process.env.VERCEL_URL ?? "http://localhost:3000"
+    }/payments/failure`,
+    automatic_tax: { enabled: true },
   });
-
-  return session.client_secret ?? "";
+  redirect(session.url!);
 }
 
 export async function getCheckoutSession(sessionId: string | null) {

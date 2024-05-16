@@ -14,8 +14,9 @@ export async function createProduct(id: string, title: string, amount: number) {
       },
       expand: ["default_price"],
     });
+    return { data: product, error: null };
   } catch (e) {
     console.log("Error: ", e);
-    return "Failed to create product";
+    return { data: null, error: "Failed to create product" };
   }
 }

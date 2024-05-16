@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getBounties } from "@/app/actions/contract/getBounties";
 import BountyComponent from "@/components/BountyComponent";
-import { Bounty, BountyInfo } from "@/utils/types/bounty";
+import { Bounty, BountyInfo } from "@/utils/types/contract";
 import { getProfile } from "@/app/actions/auth/getProfile";
 
 export default async function View() {

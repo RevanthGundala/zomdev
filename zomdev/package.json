@@ -2,6 +2,7 @@
   "private": true,
   "scripts": {
     "deploy": "npx tsx scripts/deploy.ts",
+    "testdata": "npx tsx scripts/testdata.ts",
     "upgrade": "npx tsx scripts/upgrade.ts",
     "dev": "next dev",
     "build": "next build",
@@ -40,6 +41,7 @@
     "mailgun-js": "^0.22.0",
     "mailgun.js": "^10.2.1",
     "mini-svg-data-uri": "^1.4.4",
+    "minimatch": "^9.0.4",
     "next": "^14.2.3",
     "postcss": "8.4.33",
     "posthog-js": "^1.131.4",

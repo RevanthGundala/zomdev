@@ -1,68 +1,54 @@
 "use server";
-import {
-  DynamicFieldInfo,
-  SuiClient,
-  getFullnodeUrl,
-} from "@mysten/sui.js/client";
+import { DynamicFieldInfo } from "@mysten/sui.js/client";
 import ADDRESSES from "../../../deployed_addresses.json";
+import { getSuiClient } from "./helpers/getSuiClient";
 
-export async function getCompany(companyName: string) {
-  try {
-    const { PLATFORM } = ADDRESSES;
-    const client = new SuiClient({ url: getFullnodeUrl("testnet") });
+export async function getCompanies() {
+  const companyObject = await getCompanyObject();
+  const companies = await Promise.all(
+    companyObject.map(async (company: DynamicFieldInfo) => {
+      return await getCompanyData(company);
+    })
+  );
+  return companies;
+}
 
-    const object = await client.getObject({
-      id: PLATFORM,
-      options: { showContent: true },
-    });
+async function getCompanyObject(): Promise<DynamicFieldInfo[]> {
+  const { PLATFORM } = ADDRESSES;
+  const client = await getSuiClient();
+  const companies = await client.getDynamicFields({
+    parentId: PLATFORM,
+  });
+  return companies.data;
+}
 
-    console.log("object", object.data?.content as any);
+async function getCompanyData(company: DynamicFieldInfo) {
+  const { PLATFORM } = ADDRESSES;
+  const client = await getSuiClient();
+  const data = await client.getDynamicFieldObject({
+    name: company.name,
+    parentId: PLATFORM,
+  });
+  const companyId = (data.data?.content as any).fields.name;
+  const parentId = (data.data?.content as any).fields.value.fields.id.id;
+  const companyDynamicFields = (await client.getDynamicFields({ parentId }))
+    .data;
+  // get the companydatav1 obejct as the first field
+  // TODO: add specific types to deploy script
+  const sortedCompanyDynamicFields = [
+    companyDynamicFields.find((field) => field.name.type === "vector<u8>"),
+    ...companyDynamicFields.filter((field) => field.name.type !== "vector<u8>"),
+  ];
+  if (!sortedCompanyDynamicFields)
+    throw new Error("No company dynamic fields found");
 
-    const companies = await client.getDynamicFields({
-      parentId: PLATFORM,
-    });
-
-    console.log("companies", companies.data);
-
-    const companyObjects = await Promise.all(
-      companies.data.map(
-        async (company: any) =>
-          await client.getDynamicFields({
-            parentId: company.objectId,
-          })
-      )
-    ).then((objects) => objects.flatMap((object) => object.data));
-
-    console.log("companyObjects", companyObjects);
-
-    const companyDynamicField = companyObjects.find(
-      (company: any) => company.name.value === companyName
-    );
-    if (!companyDynamicField) {
-      throw new Error(`Company ${companyName} not found`);
-    }
-
-    const company = companies.data.find(
-      (company: DynamicFieldInfo) =>
-        company.objectType ===
-        companyDynamicField.objectType.substring(
-          0,
-          companyDynamicField.objectType.length - 6 // get rid of the trailing "datav1"
-        )
-    );
-
-    if (!company) {
-      throw new Error(`Company ${companyName} not found`);
-    }
-
-    const parent = await client.getObject({
-      id: company.objectId,
-      options: { showContent: true, showOwner: true },
-    });
-    console.log("parent", (parent.data?.owner as any).ObjectOwner);
-    return (parent.data?.owner as any).ObjectOwner;
-  } catch (error) {
-    console.error("Error getting company:", error);
-    return null;
-  }
+  const { data: companyDataObject } = await client.getDynamicFieldObject({
+    name: sortedCompanyDynamicFields[0]!.name,
+    parentId,
+  });
+  const companyData = (companyDataObject?.content as any).fields.value.fields;
+  // get all bounties for the company, will return [] if no bounties
+  const bounties = sortedCompanyDynamicFields.slice(1);
+  console;
+  return { companyData, companyId, bounties, parentId };
 }

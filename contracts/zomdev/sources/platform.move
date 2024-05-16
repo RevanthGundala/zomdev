@@ -19,9 +19,11 @@ module zomdev::platform {
 
     // === Init ===
     fun init(otw: PLATFORM, ctx: &mut TxContext) {
+        let platform = Platform { id: object::new(ctx), version: 1 };
+        assert_current_version(&platform);
         package::claim_and_keep(otw, ctx);
         transfer::transfer(AdminCap { id: object::new(ctx) }, ctx.sender());
-        transfer::public_share_object(Platform { id: object::new(ctx), version: version::current_version() })
+        transfer::share_object(platform);
     }
 
     // === Public Functions ===

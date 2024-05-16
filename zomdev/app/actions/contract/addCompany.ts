@@ -2,41 +2,12 @@
 import ADDRESSES from "../../../deployed_addresses.json";
 import { executeZkLoginTxb } from "./helpers/txb";
 import { buildGaslessTransactionBytes } from "@shinami/clients";
-import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";
-import { TransactionBlock } from "@mysten/sui.js/transactions";
-import { getZkLoginSignature } from "@mysten/zklogin";
-import { SerializedSignature } from "@mysten/sui.js/cryptography";
-import {
-  deserializeZkLoginSession,
-  deserializeZkLoginState,
-} from "./helpers/serde";
+import { getSuiClient } from "./helpers/getSuiClient";
 
 export async function addCompany(state: string, session: string, name: string) {
-  if (!name) return { data: null, error: "company name is required" };
   try {
     const { PACKAGE_ID, PLATFORM } = ADDRESSES;
-    const client = new SuiClient({ url: getFullnodeUrl("testnet") });
-    // await txb.moveCall({
-    //   target: `${PACKAGE_ID}::company::new`,
-    //   arguments: [txb.object(PLATFORM), txb.pure.string(name)],
-    // });
-    // const { inputs } = await deserializeZkLoginSession(session);
-    // const { maxEpoch, ephemeralKey } = await deserializeZkLoginState(state);
-    // const { bytes, signature: userSignature } = await txb.sign({
-    //   client,
-    //   signer: ephemeralKey, // This must be the same ephemeral key pair used in the ZKP request
-    // });
-
-    // const zkLoginSignature: SerializedSignature = getZkLoginSignature({
-    //   inputs,
-    //   maxEpoch,
-    //   userSignature,
-    // });
-    // const tx = await client.executeTransactionBlock({
-    //   transactionBlock: bytes,
-    //   signature: zkLoginSignature,
-    //   requestType: "WaitForLocalExecution",
-    // });
+    const client = await getSuiClient();
     const gaslessPayloadBase64 = await buildGaslessTransactionBytes({
       sui: client,
       build: async (txb) => {
@@ -59,3 +30,25 @@ export async function addCompany(state: string, session: string, name: string) {
     return { data: null, error: "Error creating bounty" };
   }
 }
+
+// await txb.moveCall({
+//   target: `${PACKAGE_ID}::company::new`,
+//   arguments: [txb.object(PLATFORM), txb.pure.string(name)],
+// });
+// const { inputs } = await deserializeZkLoginSession(session);
+// const { maxEpoch, ephemeralKey } = await deserializeZkLoginState(state);
+// const { bytes, signature: userSignature } = await txb.sign({
+//   client,
+//   signer: ephemeralKey, // This must be the same ephemeral key pair used in the ZKP request
+// });
+
+// const zkLoginSignature: SerializedSignature = getZkLoginSignature({
+//   inputs,
+//   maxEpoch,
+//   userSignature,
+// });
+// const tx = await client.executeTransactionBlock({
+//   transactionBlock: bytes,
+//   signature: zkLoginSignature,
+//   requestType: "WaitForLocalExecution",
+// });
