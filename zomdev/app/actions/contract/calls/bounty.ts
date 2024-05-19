@@ -1,22 +1,12 @@
 "use server";
 import ADDRESSES from "../../../../deployed_addresses.json";
-import {
-  buildSponsoredTxb,
-  executeSponsoredTxb,
-  executeZkLoginTxb,
-} from "../helpers/txb";
-import {
-  SponsoredTransaction,
-  buildGaslessTransactionBytes,
-} from "@shinami/clients";
+import { buildSponsoredTxb, executeZkLoginTxb } from "../helpers/txb";
+import { buildGaslessTransactionBytes } from "@shinami/clients";
 import { getSuiClient } from "../helpers/getSuiClient";
 import { createClient } from "@/utils/supabase/server";
-import { SerializedSignature } from "@mysten/sui.js/cryptography";
-import { SuiObjectData, SuiObjectResponse } from "@mysten/sui.js/client";
+import { SuiObjectResponse } from "@mysten/sui.js/client";
 import { revalidatePath } from "next/cache";
-import { TransactionObjectArgument } from "@mysten/sui.js/dist/cjs/transactions";
 import { SUI_TYPE, USDC_TYPE } from "@/utils/constants";
-import { getProfile } from "../../auth/getProfile";
 import { deserializeZkLoginSession } from "../helpers/serde";
 
 export async function addBounty(
@@ -203,7 +193,6 @@ export async function selectWinnerCrypto(
     console.log("Gasless Payload: ", gaslessPayloadBase64);
     const { txBytes, sponsoredResponse } = await buildSponsoredTxb(
       gaslessPayloadBase64,
-      client,
       sender
     );
     return { data: { txBytes, sponsoredResponse }, error: null };

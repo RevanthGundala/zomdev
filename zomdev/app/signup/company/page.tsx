@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { signUpCompany } from "@/app/actions/forms/signUp";
 import { useFormStatus } from "react-dom";
-import { useFormState } from "react-dom";
 import { useZkLoginSession } from "@/utils/contexts/zkLoginSession";
 import { useZkLoginState } from "@/utils/contexts/zkLoginState";
 import { useZkp } from "@/utils/hooks/useZkp";

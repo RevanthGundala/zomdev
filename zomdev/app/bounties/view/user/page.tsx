@@ -2,10 +2,7 @@ import React from "react";
 import Navbar from "@/components/Navbar";
 
 import Footer from "@/components/Footer";
-import {
-  getBountiesForCompany,
-  getBountiesForUser,
-} from "@/app/actions/contract/indexer/getBounties";
+import { getBountiesForUser } from "@/app/actions/contract/indexer/getBounties";
 import BountyComponent from "@/components/BountyComponent";
 import { getProfile } from "@/app/actions/auth/getProfile";
 import { Bounty } from "@/utils/types/contract";

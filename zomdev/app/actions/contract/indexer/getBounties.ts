@@ -1,10 +1,6 @@
 "use server";
 
-import {
-  DynamicFieldInfo,
-  MoveStruct,
-  SuiObjectResponse,
-} from "@mysten/sui.js/client";
+import { DynamicFieldInfo } from "@mysten/sui.js/client";
 import { getSuiClient } from "../helpers/getSuiClient";
 import { getCompanies } from "./getCompany";
 import { Submission } from "@/utils/types/contract";

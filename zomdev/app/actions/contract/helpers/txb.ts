@@ -11,20 +11,6 @@ import { GasStationClient, SponsoredTransaction } from "@shinami/clients";
 import { deserializeZkLoginSession, deserializeZkLoginState } from "./serde";
 import { getSuiClient } from "./getSuiClient";
 
-// export async function newZkLoginTxb(
-//   session: string
-// ): Promise<TransactionBlock> {
-//   try {
-//     const { zkLoginUserAddress } = await deserializeZkLoginSession(session);
-//     const txb = new TransactionBlock();
-//     txb.setSender(zkLoginUserAddress);
-//     return txb;
-//   } catch (e) {
-//     console.log("Error: ", e);
-//     throw new Error("Failed to create new zkLoginTxb");
-//   }
-// }
-
 export async function executeZkLoginTxb(
   gaslessPayloadBase64: string,
   client: SuiClient,
@@ -38,21 +24,10 @@ export async function executeZkLoginTxb(
     );
     const { maxEpoch, ephemeralKey } = await deserializeZkLoginState(state);
 
-    const gasStationClient = new GasStationClient(process.env.GAS_ACCESS_KEY!);
-    const sponsoredResponse = await gasStationClient.sponsorTransactionBlock(
+    const sponsoredResponse = await getSponsoredResponse(
       gaslessPayloadBase64,
       zkLoginUserAddress
     );
-
-    const sponsoredStatus =
-      await gasStationClient.getSponsoredTransactionBlockStatus(
-        sponsoredResponse.txDigest
-      );
-
-    if (sponsoredStatus !== "IN_FLIGHT") {
-      // TODO: Refund the gas station
-      console.log("Sponsored Tx failed - refund the gas station");
-    }
 
     const { signature: userSignature } = await TransactionBlock.from(
       sponsoredResponse.txBytes
@@ -81,25 +56,13 @@ export async function executeZkLoginTxb(
 
 export async function buildSponsoredTxb(
   gaslessPayloadBase64: string,
-  client: SuiClient,
   address: string
 ) {
   try {
-    const gasStationClient = new GasStationClient(process.env.GAS_ACCESS_KEY!);
-    const sponsoredResponse = await gasStationClient.sponsorTransactionBlock(
+    const sponsoredResponse = await getSponsoredResponse(
       gaslessPayloadBase64,
       address
     );
-
-    const sponsoredStatus =
-      await gasStationClient.getSponsoredTransactionBlockStatus(
-        sponsoredResponse.txDigest
-      );
-
-    if (sponsoredStatus !== "IN_FLIGHT") {
-      // TODO: Refund the gas station
-      console.log("Sponsored Tx failed - refund the gas station");
-    }
 
     const txBytes = TransactionBlock.from(
       sponsoredResponse.txBytes
@@ -117,7 +80,6 @@ export async function executeSponsoredTxb(
   sponsoredResponse: SponsoredTransaction
 ) {
   try {
-    console.log("Sponsored Response: ", signature);
     const client = await getSuiClient();
     const tx = await client.executeTransactionBlock({
       transactionBlock: sponsoredResponse.txBytes,
@@ -131,4 +93,29 @@ export async function executeSponsoredTxb(
   }
 }
 
-async function getSponsoredResponse() {}
+async function getSponsoredResponse(
+  gaslessPayloadBase64: string,
+  address: string
+) {
+  const gasStationClient = new GasStationClient(
+    process.env.NEXT_PUBLIC_SUI_NETWORK === "mainnet"
+      ? process.env.GAS_ACCESS_KEY_MAIN!
+      : process.env.GAS_ACCESS_KEY_TEST!
+  );
+  const sponsoredResponse = await gasStationClient.sponsorTransactionBlock(
+    gaslessPayloadBase64,
+    address
+  );
+
+  const sponsoredStatus =
+    await gasStationClient.getSponsoredTransactionBlockStatus(
+      sponsoredResponse.txDigest
+    );
+
+  if (sponsoredStatus !== "IN_FLIGHT") {
+    // TODO: Refund the gas station
+    console.log("Sponsored Tx failed - refund the gas station");
+  }
+
+  return sponsoredResponse;
+}
