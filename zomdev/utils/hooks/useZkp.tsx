@@ -8,6 +8,7 @@ import { unstable_noStore as noStore } from "next/cache";
 import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";
 import { deserializeZkLoginState } from "@/app/actions/contract/helpers/serde";
 import { logOut } from "@/app/actions/auth/logOut";
+import { getSuiClient } from "@/app/actions/contract/helpers/getSuiClient";
 
 export function useZkp() {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +18,14 @@ export function useZkp() {
     useZkLoginSession();
 
   async function isPassedMaxEpoch(): Promise<boolean> {
-    const client = new SuiClient({ url: getFullnodeUrl("testnet") });
+    // const client = await getSuiClient();
+    const client = new SuiClient({
+      url: getFullnodeUrl(
+        process.env.NEXT_PUBLIC_SUI_NETWORK === "mainnet"
+          ? "mainnet"
+          : "testnet"
+      ),
+    });
     const { epoch } = await client.getLatestSuiSystemState();
     const { maxEpoch } = await deserializeZkLoginState(zkLoginState);
     return parseFloat(epoch) > maxEpoch;
@@ -25,8 +33,6 @@ export function useZkp() {
 
   useEffect(() => {
     const checkEpochAndLogin = async () => {
-      noStore();
-
       try {
         setIsLoading(true);
 
@@ -38,7 +44,7 @@ export function useZkp() {
           removeZkLoginSession();
           await logOut();
           console.log("Logged out");
-        } else if (zkLoginSession !== "") {
+        } else if (zkLoginSession === "{}" || zkLoginSession === "") {
           console.log("No zkLoginSession found, fetching ZKP");
           const { data, error } = await getZkp(zkLoginState as string);
           if (error) {

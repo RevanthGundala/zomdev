@@ -124,6 +124,33 @@ async function main() {
     "----------------------------------------------------------------------------------------------------"
   );
 
+  // submit for first bounty
+  const id4 = (tx2 as any).events[0].parsedJson.id;
+  const txb3 = new TransactionBlock();
+  await txb3.moveCall({
+    target: `${PACKAGE_ID}::bounty::submit`,
+    arguments: [
+      txb3.object(PLATFORM),
+      txb3.pure.id(id1),
+      txb3.pure.id(id4),
+      txb3.pure.string("githb.com"),
+    ],
+  });
+
+  const tx3 = await client.signAndExecuteTransactionBlock({
+    signer: keypair,
+    transactionBlock: txb3,
+    options: {
+      showEvents: true,
+    },
+  });
+
+  console.log("tx: ", tx3);
+
+  console.log(
+    "----------------------------------------------------------------------------------------------------"
+  );
+
   const sui =
     parseFloat(
       (await client.getCoins({ owner: keypair.getPublicKey().toSuiAddress() }))

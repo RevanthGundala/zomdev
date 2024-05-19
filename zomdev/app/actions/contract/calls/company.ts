@@ -1,8 +1,8 @@
 "use server";
-import ADDRESSES from "../../../deployed_addresses.json";
-import { executeZkLoginTxb } from "./helpers/txb";
+import ADDRESSES from "../../../../deployed_addresses.json";
+import { executeZkLoginTxb } from "../helpers/txb";
 import { buildGaslessTransactionBytes } from "@shinami/clients";
-import { getSuiClient } from "./helpers/getSuiClient";
+import { getSuiClient } from "../helpers/getSuiClient";
 
 export async function addCompany(state: string, session: string, name: string) {
   try {
@@ -17,17 +17,23 @@ export async function addCompany(state: string, session: string, name: string) {
         });
       },
     });
+    const options = {
+      showEvents: true,
+    };
     const tx = await executeZkLoginTxb(
       gaslessPayloadBase64,
       client,
       state,
-      session
+      session,
+      options
     );
     console.log("Tx: ", tx);
-    return { data: tx, error: null };
+    const event = tx.events ? tx.events[0] : null;
+    const data = event ? (event as any).parsedJson.id : null;
+    return { data, error: null };
   } catch (error) {
-    console.error("Error creating bounty:", error);
-    return { data: null, error: "Error creating bounty" };
+    console.error("Error creating company:", error);
+    return { data: null, error: "Error creating company" };
   }
 }
 

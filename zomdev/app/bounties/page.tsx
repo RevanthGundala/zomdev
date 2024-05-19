@@ -1,9 +1,11 @@
 import Navbar from "@/components/Navbar";
 import BountyComponent from "@/components/BountyComponent";
 import Footer from "@/components/Footer";
-import { getBounties } from "../actions/contract/getBounties";
+import { getBounties } from "../actions/contract/indexer/getBounties";
+import { unstable_noStore as noStore } from "next/cache";
 
 export default async function Bounties() {
+  noStore();
   const { data } = await getBounties();
   return (
     <>

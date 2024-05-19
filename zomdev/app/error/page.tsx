@@ -1,3 +1,4 @@
+"use client";
 import RedirectComponent from "@/components/RedirectComponent";
 import { useSearchParams } from "next/navigation";
 import React from "react";

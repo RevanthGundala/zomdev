@@ -13,8 +13,13 @@ export type BountyData = {
   description: string;
   requirements: string;
   reward: number;
-  submissions: string[];
+  submissions: Submission[];
   createdAt: string;
   deadline: string;
   winner: string | null;
+};
+
+export type Submission = {
+  address: string;
+  submissionLink: string;
 };

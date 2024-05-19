@@ -1,7 +1,7 @@
 "use server";
 import { DynamicFieldInfo } from "@mysten/sui.js/client";
-import ADDRESSES from "../../../deployed_addresses.json";
-import { getSuiClient } from "./helpers/getSuiClient";
+import ADDRESSES from "../../../../deployed_addresses.json";
+import { getSuiClient } from "../helpers/getSuiClient";
 
 export async function getCompanies() {
   const companyObject = await getCompanyObject();
@@ -49,6 +49,5 @@ async function getCompanyData(company: DynamicFieldInfo) {
   const companyData = (companyDataObject?.content as any).fields.value.fields;
   // get all bounties for the company, will return [] if no bounties
   const bounties = sortedCompanyDynamicFields.slice(1);
-  console;
   return { companyData, companyId, bounties, parentId };
 }

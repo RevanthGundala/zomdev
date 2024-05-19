@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { CardContent, Card, CardHeader } from "@/components/ui/card";
+import { CardContent, Card } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { DollarSign } from "lucide-react";
@@ -16,17 +16,16 @@ import React, { useState } from "react";
 import DatePicker from "react-date-picker";
 import "react-date-picker/dist/DatePicker.css";
 import "react-calendar/dist/Calendar.css";
-import { addBounty } from "@/app/actions/contract/addBounty";
-import { createProduct } from "@/app/actions/stripe/create-product";
+import { addBounty } from "@/app/actions/contract/calls/bounty";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { useZkLoginState } from "@/utils/contexts/zkLoginState";
 import { useZkLoginSession } from "@/utils/contexts/zkLoginSession";
 import { getProfile } from "@/app/actions/auth/getProfile";
+import { useZkp } from "@/utils/hooks/useZkp";
 
 type ValuePiece = Date | null;
-
 type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 export default function Create() {
@@ -37,6 +36,7 @@ export default function Create() {
   const [requirements, setRequirements] = useState("");
   const router = useRouter();
   const { toast } = useToast();
+  const { error, isLoading } = useZkp();
 
   const { zkLoginSession } = useZkLoginSession();
   const { zkLoginState } = useZkLoginState();
@@ -46,7 +46,7 @@ export default function Create() {
     const { data: id, error } = await addBounty(
       zkLoginState,
       zkLoginSession,
-      data?.company,
+      data?.company_id,
       title,
       description,
       requirements,
@@ -55,26 +55,22 @@ export default function Create() {
       deadline?.toString()
     );
     if (error) router.push(`/error?message=${error}`);
-    const { error: productError } = await createProduct(
-      id,
-      title,
-      parseFloat(reward)
-    );
-    if (productError) router.push(`/error?message=${productError}`);
-    toast({
-      title: "Success!",
-      description: "Your bounty has been created successfully.",
-      action: (
-        <ToastAction
-          altText="View Bounty"
-          onClick={() =>
-            router.push(`/bounties/${data?.company}/bounty?id=${id}`)
-          }
-        >
-          View Bounty
-        </ToastAction>
-      ),
-    });
+    else {
+      toast({
+        title: "Success!",
+        description: "Your bounty has been created successfully.",
+        action: (
+          <ToastAction
+            altText="View Bounty"
+            onClick={() =>
+              router.push(`/bounties/${data?.company}/bounty?id=${id}`)
+            }
+          >
+            View Bounty
+          </ToastAction>
+        ),
+      });
+    }
   }
 
   return (
@@ -92,7 +88,7 @@ export default function Create() {
               <div className="space-y-2">
                 <Label htmlFor="name">Title</Label>
                 <Input
-                  placeholder="Meadow Richardson"
+                  placeholder="Fix a bug in the codebase"
                   id="challenge"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
@@ -157,7 +153,7 @@ export default function Create() {
           </Card>
         </div>
         <div className="pt-6">
-          <Button type="submit" onClick={publish}>
+          <Button type="submit" onClick={publish} disabled={isLoading}>
             Publish
           </Button>
         </div>

@@ -4,7 +4,7 @@
 import { z } from "zod";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import { addCompany } from "../contract/addCompany";
+import { addCompany } from "../contract/calls/company";
 import { deserializeZkLoginSession } from "../contract/helpers/serde";
 
 const companySchema = z.object({
@@ -54,21 +54,30 @@ export async function signUpCompany(
   }
 
   const { zkLoginUserAddress } = await deserializeZkLoginSession(session);
+  const { data: companyId, error: companyError } = await addCompany(
+    state,
+    session,
+    company
+  );
+  if (companyError) {
+    console.error("Error adding company: ", companyError);
+    return;
+  }
 
   const { error } = await supabase.from("Users").insert([
     {
       name: name,
       company: company,
+      company_id: companyId,
       email: email,
       auth_email: data.user.email,
       address: zkLoginUserAddress,
     },
   ]);
 
-  const { error: companyError } = await addCompany(state, session, company);
-
-  if (error || companyError) {
+  if (error) {
     console.error("Error signing up: ", error);
+    return;
   } else {
     redirect("/signup/success");
   }

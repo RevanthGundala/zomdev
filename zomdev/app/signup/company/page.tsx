@@ -15,6 +15,7 @@ import { useZkLoginState } from "@/utils/contexts/zkLoginState";
 import { useZkp } from "@/utils/hooks/useZkp";
 
 export default function SignUpCompany() {
+  const { isLoading } = useZkp();
   const { zkLoginSession } = useZkLoginSession();
   const { zkLoginState } = useZkLoginState();
   const signUpCompanyWithZk = signUpCompany.bind(
@@ -62,8 +63,12 @@ export default function SignUpCompany() {
               type="email"
             />
           </div>
-          <Button className="w-full" type="submit" disabled={pending}>
-            Sign Up
+          <Button
+            className="w-full"
+            type="submit"
+            disabled={pending || isLoading}
+          >
+            {isLoading ? "Loading..." : "Sign Up"}
           </Button>
         </form>
       </div>

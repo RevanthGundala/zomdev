@@ -21,7 +21,6 @@ export function ZkLoginSessionContextProvider({
 }: ZkLoginSessionContextProviderProps) {
   const [zkLoginSession, setZkLoginSession, removeZkLoginSession] =
     useSessionStorage("zkLoginSession", "{}");
-  const zkLoginSessionExists = zkLoginSession !== "{}";
 
   return (
     <ZkLoginSessionContext.Provider

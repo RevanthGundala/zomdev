@@ -23,6 +23,11 @@ module zomdev::company {
     public(package) fun self_mut(platform: &mut Platform, company_id: ID): &mut Company {
         df::borrow_mut(platform::uid_mut(platform), company_id)
     }
+    
+    public(package) fun update_completed_payouts(company: &mut Company){ 
+        let company_data = df::borrow_mut<vector<u8>, CompanyDataV1>(uid_mut(company), b"data_v1");
+        company_data.completed_payouts = company_data.completed_payouts + 1;
+    } 
 
     // === Private Functions ===
     entry fun new(platform: &mut Platform, company_name: String, ctx: &mut TxContext) {  
@@ -30,7 +35,7 @@ module zomdev::company {
         let mut company = Company { id: object::new(ctx) };
         let company_data = CompanyDataV1 { name: company_name, completed_payouts: 0 };
         let id = object::uid_to_inner(&company.id);
-        event::emit(CompanyCreatedV1 { id: id } );
+        event::emit(CompanyCreatedV1 { id } );
         // Don't need a uniqe name b/c it's a 1:1 relationship
         df::add(&mut company.id, b"data_v1", company_data);
         df::add(platform::uid_mut(platform), id, company);

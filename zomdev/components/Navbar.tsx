@@ -57,7 +57,7 @@ export default function Navbar() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar className="hover:cursor-pointer">
-                <AvatarImage src="https://github.com/shadcn.png" />
+                {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
@@ -71,14 +71,20 @@ export default function Navbar() {
                   <Link href="/profile">Profile</Link>
                 </DropdownMenuItem>
                 {data && data.company && (
-                  <DropdownMenuItem>
-                    <SquarePen className="mr-2 h-4 w-4" />
-                    <Link href="/bounties/create">Create Bounty</Link>
-                  </DropdownMenuItem>
+                  <>
+                    <DropdownMenuItem>
+                      <SquarePen className="mr-2 h-4 w-4" />
+                      <Link href="/bounties/create">Create Bounty</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <BookHeart className="mr-2 h-4 w-4" />
+                      <Link href="/bounties/view/company">Company Bounties</Link>
+                    </DropdownMenuItem>
+                  </>
                 )}
                 <DropdownMenuItem>
                   <BookHeart className="mr-2 h-4 w-4" />
-                  <Link href="/bounties/view">My Bounties</Link>
+                  <Link href="/bounties/view/user">My Bounties</Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />

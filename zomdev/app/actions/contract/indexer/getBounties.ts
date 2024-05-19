@@ -1,14 +1,15 @@
 "use server";
 
-import { DynamicFieldInfo } from "@mysten/sui.js/client";
-import { getSuiClient } from "./helpers/getSuiClient";
+import {
+  DynamicFieldInfo,
+  MoveStruct,
+  SuiObjectResponse,
+} from "@mysten/sui.js/client";
+import { getSuiClient } from "../helpers/getSuiClient";
 import { getCompanies } from "./getCompany";
-import { error } from "console";
+import { Submission } from "@/utils/types/contract";
 
-export async function getBounties(companyName?: string) {
-  // if (!companyName) {
-  //   return await getBountiesForUser();
-  // }
+export async function getBounties() {
   try {
     const companies = await getCompanies();
     const bounties = await Promise.all(
@@ -35,21 +36,19 @@ export async function getBounties(companyName?: string) {
     // Merge the cleaned companies array with the nested bounties array
     const result = cleanedCompanies.map((company, index) => ({
       ...company,
-      bounties: bounties[index].map(({ bountyId, bountyData }) => {
-        const { created_at, submissions, ...restBountyData } = bountyData;
+      bounties: bounties[index].map(({ bountyId, cleanedBountyData }) => {
+        const { created_at, ...restBountyData } = cleanedBountyData;
 
         return {
           bountyId,
           bountyData: {
             ...restBountyData,
             createdAt: created_at,
-            submissions: submissions.fields.contents,
           },
         };
       }),
     }));
-
-    console.dir(result, { depth: null });
+    //console.dir(result, { depth: null });
     return { data: result, error: null };
   } catch (error) {
     console.error("Error getting bounties:", error);
@@ -65,11 +64,33 @@ export async function getBountyById(
     return { data: null, error: "Bounty/Company not found" };
   const { data: bountyData } = await getBounties();
   const res = bountyData?.find((info) => info.companyData.name === companyName);
-
   const bounty = res?.bounties.find((bounty) => bounty.bountyId === bountyId);
   const company = { companyId: res?.companyId, companyData: res?.companyData };
   const data = { company, bounty };
   return { data, error: null };
+}
+
+export async function getBountiesForCompany(companyName: string | null) {
+  if (!companyName) return { data: null, error: "Company not found" };
+  const { data: bountyData } = await getBounties();
+  const res = bountyData?.find((info) => info.companyData.name === companyName);
+  const company = { companyId: res?.companyId, companyData: res?.companyData };
+  return { data: { company, bounties: res?.bounties }, error: null };
+}
+
+export async function getBountiesForUser(address: string | null) {
+  if (!address) return { data: null, error: "User not found" };
+  const { data: bountyData } = await getBounties();
+  const res = bountyData?.find((info) =>
+    info.bounties.some((bounty) =>
+      bounty.bountyData.submissions.includes(address)
+    )
+  );
+  const company = { companyId: res?.companyId, companyData: res?.companyData };
+  const bounties = res?.bounties.filter((bounty) =>
+    bounty.bountyData.submissions.includes(address)
+  );
+  return { data: { company, bounties }, error: null };
 }
 
 async function getBountyData(
@@ -105,5 +126,31 @@ async function getSingleBountyData(
     parentId: value.fields.id.id,
   });
   const bountyData = (bounty.data?.content as any).fields.value.fields;
-  return { bountyData, bountyId };
+  const submissionsData = await getSubmissions(bountyData.submissions);
+  const cleanedBountyData = { ...bountyData, submissions: submissionsData };
+  return { cleanedBountyData, bountyId };
+}
+
+async function getSubmissions(submissionsField: any): Promise<Submission[]> {
+  const parentId = submissionsField.fields.id.id;
+  const client = await getSuiClient();
+  const contractSubmissions = await client.getDynamicFields({
+    parentId,
+  });
+  const submissions = await Promise.all(
+    contractSubmissions.data.map(
+      async (submission: DynamicFieldInfo) =>
+        await client.getDynamicFieldObject({
+          name: submission.name,
+          parentId,
+        })
+    )
+  );
+  const fields = submissions.map(
+    (submission) => (submission.data?.content as any).fields
+  );
+  return fields.map((field) => ({
+    address: field.name,
+    submissionLink: field.value,
+  }));
 }
