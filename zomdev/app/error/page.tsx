@@ -1,9 +1,9 @@
 "use client";
 import RedirectComponent from "@/components/RedirectComponent";
 import { useSearchParams } from "next/navigation";
-import React from "react";
+import { Suspense } from "react";
 
-export default function Error() {
+function ErrorComponent() {
   const message = useSearchParams().get("message");
   return (
     <RedirectComponent
@@ -11,5 +11,13 @@ export default function Error() {
       subText={message || "An error occurred."}
       buttonText="View Bounties"
     />
+  );
+}
+
+export default function Error() {
+  return (
+    <Suspense fallback={null}>
+      <ErrorComponent />
+    </Suspense>
   );
 }
