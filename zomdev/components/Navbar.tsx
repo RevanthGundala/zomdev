@@ -39,6 +39,13 @@ export default function Navbar() {
           </Link>
         </NavigationMenuItem>
         <NavigationMenuItem className="flex">
+          <Link href="/about" legacyBehavior passHref>
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+              About
+            </NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem className="flex">
           <Link href="/contact" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               Contact
@@ -78,7 +85,9 @@ export default function Navbar() {
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <BookHeart className="mr-2 h-4 w-4" />
-                      <Link href="/bounties/view/company">Company Bounties</Link>
+                      <Link href="/bounties/view/company">
+                        Company Bounties
+                      </Link>
                     </DropdownMenuItem>
                   </>
                 )}
