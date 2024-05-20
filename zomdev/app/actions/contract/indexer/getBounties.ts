@@ -44,7 +44,7 @@ export async function getBounties() {
         };
       }),
     }));
-    //console.dir(result, { depth: null });
+    console.dir(result, { depth: null });
     return { data: result, error: null };
   } catch (error) {
     console.error("Error getting bounties:", error);

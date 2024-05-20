@@ -6,6 +6,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { CSPostHogProvider } from "./providers";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import SuiProvider from "@/components/SuiProvider";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -41,6 +42,7 @@ export default function RootLayout({
           {children}
           <Toaster />
           <Analytics />
+          <SpeedInsights />
         </body>
       </html>
     </SuiProvider>
