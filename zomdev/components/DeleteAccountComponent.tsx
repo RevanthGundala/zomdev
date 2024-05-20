@@ -33,7 +33,7 @@ export default function DeleteAccount() {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={deleteProfile}>
+          <AlertDialogAction onClick={() => deleteProfile()}>
             Continue
           </AlertDialogAction>
         </AlertDialogFooter>
