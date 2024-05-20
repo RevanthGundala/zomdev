@@ -24,8 +24,6 @@ export async function GET(request: Request) {
       code,
     };
 
-    console.log("Body: ", body);
-
     try {
       const response = await fetch("https://oauth2.googleapis.com/token", {
         method: "POST",
@@ -35,9 +33,7 @@ export async function GET(request: Request) {
         body: JSON.stringify(body),
       });
       // Extract JWT from claims
-      console.log("Response: ", response);
       const claims = await response.json();
-      console.log("Claims: ", claims);
       const { id_token, access_token } = claims;
 
       // TODO: Remove cookies and use supabase session instead

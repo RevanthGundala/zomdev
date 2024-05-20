@@ -39,9 +39,9 @@ export function useZkp() {
     const checkEpochAndLogin = async () => {
       try {
         setIsLoading(true);
-        if (!isAuthenticated) {
-          router.push("/login");
-        }
+        // if (!isAuthenticated) {
+        //   router.push("/login");
+        // }
         const hasPassedMaxEpoch = await isPassedMaxEpoch();
 
         if (hasPassedMaxEpoch) {
