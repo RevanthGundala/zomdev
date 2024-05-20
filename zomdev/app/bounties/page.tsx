@@ -17,8 +17,8 @@ export default async function Bounties() {
         </p>
         <section className="flex flex-col space-y-4">
           {data ? (
-            data.map((company) =>
-              company.bounties.map((bounty) => (
+            data.map((company: any) =>
+              company.bounties.map((bounty: any) => (
                 <BountyComponent company={company} bounty={bounty} />
               ))
             )

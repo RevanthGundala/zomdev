@@ -8,43 +8,44 @@ import { Submission } from "@/utils/types/contract";
 export async function getBounties() {
   try {
     const companies = await getCompanies();
-    const bounties = await Promise.all(
-      companies.map(
-        async (company: any) =>
-          await getBountyData(company.bounties, company.parentId)
-      )
-    );
+    // const bounties = await Promise.all(
+    //   companies.map(
+    //     async (company: any) =>
+    //       await getBountyData(company.bounties, company.parentId)
+    //   )
+    // );
 
-    // Remove the 'bounties' and 'parentId' fields from the companies array
-    const cleanedCompanies = companies.map(({ companyData, companyId }) => {
-      // Destructure to remove completed_payouts and get the rest of the properties
-      const { completed_payouts, ...rest } = companyData;
+    // // Remove the 'bounties' and 'parentId' fields from the companies array
+    // const cleanedCompanies = companies.map(({ companyData, companyId }) => {
+    //   // Destructure to remove completed_payouts and get the rest of the properties
+    //   const { completed_payouts, ...rest } = companyData;
 
-      return {
-        companyId,
-        companyData: {
-          ...rest,
-          completedPayouts: completed_payouts,
-        },
-      };
-    });
+    //   return {
+    //     companyId,
+    //     companyData: {
+    //       ...rest,
+    //       completedPayouts: completed_payouts,
+    //     },
+    //   };
+    // });
 
-    // Merge the cleaned companies array with the nested bounties array
-    const result = cleanedCompanies.map((company, index) => ({
-      ...company,
-      bounties: bounties[index].map(({ bountyId, cleanedBountyData }) => {
-        const { created_at, ...restBountyData } = cleanedBountyData;
+    // // Merge the cleaned companies array with the nested bounties array
+    // const result = cleanedCompanies.map((company, index) => ({
+    //   ...company,
+    //   bounties: bounties[index].map(({ bountyId, cleanedBountyData }) => {
+    //     const { created_at, ...restBountyData } = cleanedBountyData;
 
-        return {
-          bountyId,
-          bountyData: {
-            ...restBountyData,
-            createdAt: created_at,
-          },
-        };
-      }),
-    }));
+    //     return {
+    //       bountyId,
+    //       bountyData: {
+    //         ...restBountyData,
+    //         createdAt: created_at,
+    //       },
+    //     };
+    //   }),
+    // }));
     //console.dir(result, { depth: null });
+    const result = companies as any;
     return { data: result, error: null };
   } catch (error) {
     console.error("Error getting bounties:", error);
@@ -59,8 +60,12 @@ export async function getBountyById(
   if (!bountyId || !companyName)
     return { data: null, error: "Bounty/Company not found" };
   const { data: bountyData } = await getBounties();
-  const res = bountyData?.find((info) => info.companyData.name === companyName);
-  const bounty = res?.bounties.find((bounty) => bounty.bountyId === bountyId);
+  const res = bountyData?.find(
+    (info: any) => info.companyData.name === companyName
+  );
+  const bounty = res?.bounties.find(
+    (bounty: any) => bounty.bountyId === bountyId
+  );
   const company = { companyId: res?.companyId, companyData: res?.companyData };
   const data = { company, bounty };
   return { data, error: null };
@@ -69,7 +74,9 @@ export async function getBountyById(
 export async function getBountiesForCompany(companyName: string | null) {
   if (!companyName) return { data: null, error: "Company not found" };
   const { data: bountyData } = await getBounties();
-  const res = bountyData?.find((info) => info.companyData.name === companyName);
+  const res = bountyData?.find(
+    (info: any) => info.companyData.name === companyName
+  );
   const company = { companyId: res?.companyId, companyData: res?.companyData };
   return { data: { company, bounties: res?.bounties }, error: null };
 }
@@ -77,13 +84,13 @@ export async function getBountiesForCompany(companyName: string | null) {
 export async function getBountiesForUser(address: string | null) {
   if (!address) return { data: null, error: "User not found" };
   const { data: bountyData } = await getBounties();
-  const res = bountyData?.find((info) =>
-    info.bounties.some((bounty) =>
+  const res = bountyData?.find((info: any) =>
+    info.bounties.some((bounty: any) =>
       bounty.bountyData.submissions.includes(address)
     )
   );
   const company = { companyId: res?.companyId, companyData: res?.companyData };
-  const bounties = res?.bounties.filter((bounty) =>
+  const bounties = res?.bounties.filter((bounty: any) =>
     bounty.bountyData.submissions.includes(address)
   );
   return { data: { company, bounties }, error: null };

@@ -18,7 +18,11 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 if (!PRIVATE_KEY) throw new Error("PRIVATE_KEY is not set");
 
 const keypair = Ed25519Keypair.fromSecretKey(fromHEX(PRIVATE_KEY));
-const client = new SuiClient({ url: getFullnodeUrl("testnet") });
+const client = new SuiClient({
+  url: getFullnodeUrl(
+    process.env.NEXT_PUBLC_SUI_NETWORK === "mainnet" ? "mainnet" : "testnet"
+  ),
+});
 const path_to_scripts = dirname(fileURLToPath(import.meta.url));
 const path_to_contracts = path.join(
   path_to_scripts,

@@ -108,9 +108,9 @@ module zomdev::bounty {
         // assert!(cap.bounty_id == bounty_id, EInvalidBountyCap);
 
         // TODO: Only accept USDC right now
-        // let usdc = b"0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN";
-        // let coin_type = type_name::into_string(type_name::get_with_original_ids<T>()).into_bytes();
-        // assert!(coin_type == usdc, EInvalidCoinType);
+        let usdc = b"0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN";
+        let coin_type = type_name::into_string(type_name::get_with_original_ids<T>()).into_bytes();
+        assert!(coin_type == usdc, EInvalidCoinType);
         let company = company::self_mut(platform, company_id);
 
         // create new scope so we can reuse company variable
@@ -127,7 +127,7 @@ module zomdev::bounty {
         payment.split_and_transfer(bounty_data.reward, winner, ctx);
         payment.destroy_zero();
 
-        // delete the bounty cap
+        // TODO: delete the bounty cap
         // let BountyCapV1 { id , bounty_id: _ } = cap;
         // object::delete(id);
     }
