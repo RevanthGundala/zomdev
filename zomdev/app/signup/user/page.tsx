@@ -11,8 +11,10 @@ import { signUpUser } from "@/app/actions/forms/signUp";
 import { useFormStatus } from "react-dom";
 import { useZkLoginSession } from "@/utils/contexts/zkLoginSession";
 import { useZkLoginState } from "@/utils/contexts/zkLoginState";
+import { useZkp } from "@/utils/hooks/useZkp";
 
 export default function SignUpUser() {
+  const { isLoading } = useZkp();
   const { pending } = useFormStatus();
   const { zkLoginSession } = useZkLoginSession();
   const { zkLoginState } = useZkLoginState();
@@ -51,8 +53,12 @@ export default function SignUpUser() {
               type="email"
             />
           </div>
-          <Button className="w-full" type="submit" disabled={pending}>
-            Sign Up
+          <Button
+            className="w-full"
+            type="submit"
+            disabled={pending || isLoading}
+          >
+            {isLoading ? "Loading..." : "Sign Up"}
           </Button>
         </form>
       </div>

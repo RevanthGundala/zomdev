@@ -62,38 +62,42 @@ export default function BountyId() {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      // can cache this
-      const { data: profileData } = await getProfile();
-      if (profileData?.company === decodeURIComponent(companyName as string))
-        setIsOwner(true);
+      try {
+        // can cache this
+        const { data: profileData } = await getProfile();
+        if (profileData?.company === decodeURIComponent(companyName as string))
+          setIsOwner(true);
 
-      noStore();
-      const { data } = await getBountyById(
-        id,
-        decodeURIComponent(companyName as string)
-      );
-      setCompany(data?.company);
-      setBounty(data?.bounty);
+        noStore();
+        const { data } = await getBountyById(
+          id,
+          decodeURIComponent(companyName as string)
+        );
+        setCompany(data?.company);
+        setBounty(data?.bounty);
 
-      const { data: users } = await getUsers();
-      const contractSubmissions = data?.bounty?.bountyData.submissions;
-      // console.log("submissions", submissions);
-      // match emails to zkLoginAddress
-      const updatedSubmissions =
-        contractSubmissions && contractSubmissions.length > 0
-          ? contractSubmissions
-              .map((submission: Submission) => {
-                const address = submission.address;
-                const user = users?.find((user) => user.address === address);
-                return user ? { ...submission, email: user.email } : null;
-              })
-              .filter(
-                (cleanedSubmission: UiSubmission) =>
-                  cleanedSubmission.email !== null
-              )
-          : [];
+        const { data: users } = await getUsers();
+        const contractSubmissions = data?.bounty?.bountyData.submissions;
+        // console.log("submissions", submissions);
+        // match emails to zkLoginAddress
+        const updatedSubmissions =
+          contractSubmissions && contractSubmissions.length > 0
+            ? contractSubmissions
+                .map((submission: Submission) => {
+                  const address = submission.address;
+                  const user = users?.find((user) => user.address === address);
+                  return user ? { ...submission, email: user.email } : null;
+                })
+                .filter(
+                  (cleanedSubmission: UiSubmission) =>
+                    cleanedSubmission.email !== null
+                )
+            : [];
 
-      setSubmissions(updatedSubmissions);
+        setSubmissions(updatedSubmissions);
+      } catch (error) {
+        console.error("Error getting bounty:", error);
+      }
       setIsLoading(false);
     };
 
