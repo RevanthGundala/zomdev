@@ -12,7 +12,7 @@ export default async function Bounties() {
       <Navbar />
       <div className="space-y-6 px-20 mb-10 mt-40 min-h-screen">
         <header className="text-4xl font-bold px-2">Bounties</header>
-        <p className="hidden md:text-lg font-light px-2">
+        <p className="text-lg font-light px-2">
           View different bounties from companies
         </p>
         <section className="flex flex-col space-y-4">
