@@ -1,5 +1,6 @@
 "use server";
-import ADDRESSES from "../../../../deployed_addresses.json";
+import MAINNET_ADDRESSES from "../../../../mainnet_deployed_addresses.json";
+import TESTNET_ADDRESSES from "../../../../testnet_deployed_addresses.json";
 import { buildSponsoredTxb, executeZkLoginTxb } from "../helpers/txb";
 import { buildGaslessTransactionBytes } from "@shinami/clients";
 import { getSuiClient } from "../helpers/getSuiClient";
@@ -8,6 +9,11 @@ import { SuiObjectResponse } from "@mysten/sui.js/client";
 import { revalidatePath } from "next/cache";
 import { SUI_TYPE, USDC_TYPE } from "@/utils/constants";
 import { deserializeZkLoginSession } from "../helpers/serde";
+
+const ADDRESSES =
+  process.env.NEXT_PUBLIC_SUI_NETWORK === "mainnet"
+    ? MAINNET_ADDRESSES
+    : TESTNET_ADDRESSES;
 
 export async function addBounty(
   state: string,
@@ -25,6 +31,7 @@ export async function addBounty(
       return { data: null, error: "Deadline not set/companyId" };
     const { PACKAGE_ID, PLATFORM } = ADDRESSES;
     const client = await getSuiClient();
+    console.log("Package ID: ", PACKAGE_ID);
     const gaslessPayloadBase64 = await buildGaslessTransactionBytes({
       sui: client,
       build: async (txb) => {

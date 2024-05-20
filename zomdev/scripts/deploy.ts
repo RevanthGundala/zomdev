@@ -97,7 +97,9 @@ async function main() {
 
   const deployed_path = path.join(
     path_to_scripts,
-    "../deployed_addresses.json"
+    process.env.NEXT_SUI_PUBLIC_NETWORK === "mainnet"
+      ? "../mainnet_deployed_addresses.json"
+      : "../testnet_deployed_addresses.json"
   );
   writeFileSync(deployed_path, JSON.stringify(deployed_address, null, 2));
   console.log(

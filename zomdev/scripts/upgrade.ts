@@ -12,7 +12,7 @@ import { fileURLToPath } from "url";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { writeFileSync } from "fs";
 import { NAME } from "../utils/constants";
-import ADDRESSES from "../deployed_addresses.json";
+import ADDRESSES from "../mainnet_deployed_addresses.json";
 
 dotenv.config({ path: ".env.local" });
 const PRIVATE_KEY = process.env.PRIVATE_KEY;

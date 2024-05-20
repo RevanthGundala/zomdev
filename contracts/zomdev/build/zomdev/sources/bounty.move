@@ -108,8 +108,10 @@ module zomdev::bounty {
         // assert!(cap.bounty_id == bounty_id, EInvalidBountyCap);
 
         // TODO: Only accept USDC right now
-        let usdc = b"0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN";
-        let coin_type = type_name::into_string(type_name::get_with_original_ids<T>()).into_bytes();
+        //let usdc = b"0x5d4b302506645c37ff133b98c4b50a5ae14841659738d6d733d59d0d217a93bf::coin::COIN";
+        let usdc = b"0x2::sui::SUI";
+        
+        let coin_type = type_name::into_string(type_name::get<T>()).into_bytes();
         assert!(coin_type == usdc, EInvalidCoinType);
         let company = company::self_mut(platform, company_id);
 

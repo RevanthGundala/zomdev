@@ -7,7 +7,7 @@ import {
   SuiObjectChange,
 } from "@mysten/sui.js/client";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
-import ADDRESSES from "../deployed_addresses.json";
+import ADDRESSES from "../testnet_deployed_addresses.json";
 
 dotenv.config({ path: ".env.local" });
 const PRIVATE_KEY = process.env.PRIVATE_KEY;

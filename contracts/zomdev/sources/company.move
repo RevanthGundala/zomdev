@@ -1,6 +1,6 @@
 module zomdev::company {
     // === Imports ===
-    use zomdev::platform::{Platform, Self};
+    use zomdev::platform::{Platform, Self, AdminCap};
     use std::string::String;
     use sui::{dynamic_field as df, event};
   
@@ -35,6 +35,17 @@ module zomdev::company {
         let mut company = Company { id: object::new(ctx) };
         let company_data = CompanyDataV1 { name: company_name, completed_payouts: 0 };
         let id = object::uid_to_inner(&company.id);
+        event::emit(CompanyCreatedV1 { id } );
+        // Don't need a uniqe name b/c it's a 1:1 relationship
+        df::add(&mut company.id, b"data_v1", company_data);
+        df::add(platform::uid_mut(platform), id, company);
+    }
+
+    entry fun admin_new(_: &AdminCap, platform: &mut Platform, company_name: String, company_id: ID, ctx: &mut TxContext) { 
+        platform::assert_current_version(platform);
+        let mut company = Company { id: object::new(ctx) };
+        let company_data = CompanyDataV1 { name: company_name, completed_payouts: 0 };
+        let id = company_id;
         event::emit(CompanyCreatedV1 { id } );
         // Don't need a uniqe name b/c it's a 1:1 relationship
         df::add(&mut company.id, b"data_v1", company_data);

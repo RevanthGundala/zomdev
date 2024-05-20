@@ -1,8 +1,14 @@
 "use server";
-import ADDRESSES from "../../../../deployed_addresses.json";
+import MAINNET_ADDRESSES from "../../../../mainnet_deployed_addresses.json";
+import TESTNET_ADDRESSES from "../../../../testnet_deployed_addresses.json";
 import { executeZkLoginTxb } from "../helpers/txb";
 import { buildGaslessTransactionBytes } from "@shinami/clients";
 import { getSuiClient } from "../helpers/getSuiClient";
+
+const ADDRESSES =
+  process.env.NEXT_PUBLIC_SUI_NETWORK === "mainnet"
+    ? MAINNET_ADDRESSES
+    : TESTNET_ADDRESSES;
 
 export async function addCompany(state: string, session: string, name: string) {
   try {
