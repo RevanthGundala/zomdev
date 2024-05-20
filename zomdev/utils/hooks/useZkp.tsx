@@ -9,6 +9,8 @@ import { SuiClient, getFullnodeUrl } from "@mysten/sui.js/client";
 import { deserializeZkLoginState } from "@/app/actions/contract/helpers/serde";
 import { logOut } from "@/app/actions/auth/logOut";
 import { getSuiClient } from "@/app/actions/contract/helpers/getSuiClient";
+import { useAuth } from "./useAuth";
+import { useRouter } from "next/navigation";
 
 export function useZkp() {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,6 +18,8 @@ export function useZkp() {
   const { zkLoginState, removeZkLoginState } = useZkLoginState();
   const { zkLoginSession, setZkLoginSession, removeZkLoginSession } =
     useZkLoginSession();
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
 
   async function isPassedMaxEpoch(): Promise<boolean> {
     // const client = await getSuiClient();
@@ -35,7 +39,9 @@ export function useZkp() {
     const checkEpochAndLogin = async () => {
       try {
         setIsLoading(true);
-
+        if (!isAuthenticated) {
+          router.push("/login");
+        }
         const hasPassedMaxEpoch = await isPassedMaxEpoch();
 
         if (hasPassedMaxEpoch) {

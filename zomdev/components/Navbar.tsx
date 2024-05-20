@@ -32,20 +32,20 @@ export default function Navbar() {
   const { data, isAuthenticated } = useAuth();
   return (
     <NavigationMenu className="min-w-full fixed top-0 z-50 bg-white">
-      <NavigationMenuList className="flex space-x-6 px-20 py-10 items-center">
+      <NavigationMenuList className="flex space-x-6 px-1 md:px-20 py-10 items-center">
         <NavigationMenuItem className="flex">
           <Link href="/" legacyBehavior passHref>
             <img src="/zomdev.png" alt="Logo" className="w-14 h-14" />
           </Link>
         </NavigationMenuItem>
-        <NavigationMenuItem className="flex">
+        <NavigationMenuItem className="hidden md:flex">
           <Link href="/about" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               About
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
-        <NavigationMenuItem className="flex">
+        <NavigationMenuItem className="hidden md:flex">
           <Link href="/contact" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               Contact
