@@ -8,44 +8,43 @@ import { Submission } from "@/utils/types/contract";
 export async function getBounties() {
   try {
     const companies = await getCompanies();
-    // const bounties = await Promise.all(
-    //   companies.map(
-    //     async (company: any) =>
-    //       await getBountyData(company.bounties, company.parentId)
-    //   )
-    // );
+    const bounties = await Promise.all(
+      companies.map(
+        async (company: any) =>
+          await getBountyData(company.bounties, company.parentId)
+      )
+    );
 
-    // // Remove the 'bounties' and 'parentId' fields from the companies array
-    // const cleanedCompanies = companies.map(({ companyData, companyId }) => {
-    //   // Destructure to remove completed_payouts and get the rest of the properties
-    //   const { completed_payouts, ...rest } = companyData;
+    // Remove the 'bounties' and 'parentId' fields from the companies array
+    const cleanedCompanies = companies.map(({ companyData, companyId }) => {
+      // Destructure to remove completed_payouts and get the rest of the properties
+      const { completed_payouts, ...rest } = companyData;
 
-    //   return {
-    //     companyId,
-    //     companyData: {
-    //       ...rest,
-    //       completedPayouts: completed_payouts,
-    //     },
-    //   };
-    // });
+      return {
+        companyId,
+        companyData: {
+          ...rest,
+          completedPayouts: completed_payouts,
+        },
+      };
+    });
 
-    // // Merge the cleaned companies array with the nested bounties array
-    // const result = cleanedCompanies.map((company, index) => ({
-    //   ...company,
-    //   bounties: bounties[index].map(({ bountyId, cleanedBountyData }) => {
-    //     const { created_at, ...restBountyData } = cleanedBountyData;
+    // Merge the cleaned companies array with the nested bounties array
+    const result = cleanedCompanies.map((company, index) => ({
+      ...company,
+      bounties: bounties[index].map(({ bountyId, cleanedBountyData }) => {
+        const { created_at, ...restBountyData } = cleanedBountyData;
 
-    //     return {
-    //       bountyId,
-    //       bountyData: {
-    //         ...restBountyData,
-    //         createdAt: created_at,
-    //       },
-    //     };
-    //   }),
-    // }));
+        return {
+          bountyId,
+          bountyData: {
+            ...restBountyData,
+            createdAt: created_at,
+          },
+        };
+      }),
+    }));
     //console.dir(result, { depth: null });
-    const result = companies as any;
     return { data: result, error: null };
   } catch (error) {
     console.error("Error getting bounties:", error);
