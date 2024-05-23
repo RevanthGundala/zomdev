@@ -1,10 +1,14 @@
 import Link from "next/link";
 import React from "react";
 
-export default function BackButton() {
+type BackButtonProps = {
+  path: string;
+};
+
+export default function BackButton({ path }: BackButtonProps) {
   return (
     <Link
-      href="/"
+      href={path}
       className="rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover flex items-center group text-sm text-white"
     >
       <svg

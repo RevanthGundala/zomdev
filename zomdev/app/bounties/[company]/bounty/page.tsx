@@ -28,10 +28,10 @@ import { unstable_noStore as noStore } from "next/cache";
 import { submitBounty } from "@/app/actions/contract/calls/bounty";
 import { useZkLoginState } from "@/utils/contexts/zkLoginState";
 import { useZkLoginSession } from "@/utils/contexts/zkLoginSession";
-import PaymentPopup from "@/components/popup/payment";
 import { useSessionStorage } from "usehooks-ts";
 import Link from "next/link";
 import { useZkp } from "@/utils/hooks/useZkp";
+import { useRouter } from "next/navigation";
 
 export default function BountyId() {
   const id = useSearchParams().get("id");
@@ -48,6 +48,7 @@ export default function BountyId() {
   const [company, setCompany] = useState<Company | null | undefined>(null);
   const [bounty, setBounty] = useState<Bounty | null | undefined>(null);
   const [submissions, setSubmissions] = useState<UiSubmission[]>([]);
+  const router = useRouter();
 
   const [checkout, setCheckout, removeCheckout] = useSessionStorage(
     "checkout",
@@ -114,6 +115,7 @@ export default function BountyId() {
       })
     );
     setSubmitted(true);
+    router.push("/payments");
   }
 
   async function handleSubmitUser() {
@@ -247,20 +249,13 @@ export default function BountyId() {
                     />
                   </CardContent>
                   <CardFooter>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="outline"
-                          onClick={handleSubmitCompany}
-                          disabled={winner === ""}
-                        >
-                          Submit
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent hidden={!submitted}>
-                        <PaymentPopup />
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <Button
+                      variant="outline"
+                      onClick={handleSubmitCompany}
+                      disabled={winner === ""}
+                    >
+                      Submit
+                    </Button>
                   </CardFooter>
                 </>
               )}

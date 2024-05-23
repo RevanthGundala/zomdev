@@ -8,9 +8,11 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { CardContent, Card } from "@/components/ui/card";
 import { getProfile } from "../actions/auth/getProfile";
+import { getSuiClient } from "../actions/contract/helpers/getSuiClient";
 
 export default async function ProfileServer() {
   const { data } = await getProfile();
+
   return (
     <>
       <Card>

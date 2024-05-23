@@ -9,12 +9,39 @@ import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
 import { joinWaitlist } from "../actions/forms/joinWaitlist";
 import { Button } from "@/components/ui/button";
+import {
+  ConnectButton,
+  useAutoConnectWallet,
+  useCurrentAccount,
+  useCurrentWallet,
+  useSuiClientQuery,
+} from "@mysten/dapp-kit";
+import { SUI_TYPE, USDC_TYPE } from "@/utils/constants";
+import { useAuth } from "@/utils/hooks/useAuth";
+import { useZkLoginSession } from "@/utils/contexts/zkLoginSession";
+import { useZkLoginState } from "@/utils/contexts/zkLoginState";
+import { claim } from "../actions/contract/calls/claim";
 
 export default function ProfileClient({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { zkLoginSession } = useZkLoginSession();
+  const { zkLoginState } = useZkLoginState();
+  const { data: profile } = useAuth();
+  const usdcType =
+    process.env.NEXT_PUBLIC_SUI_NETWORK === "mainnet" ? USDC_TYPE : SUI_TYPE;
+  // const autoConnectionStatus = useAutoConnectWallet();
+  const { connectionStatus } = useCurrentWallet();
+  const account = useCurrentAccount();
+  const { data: balance } = useSuiClientQuery(
+    "getBalance",
+    { owner: profile?.address ?? "", coinType: usdcType },
+    {
+      gcTime: 10000,
+    }
+  );
   const { pending } = useFormStatus();
   const initialState = {
     error: { profile: null },
@@ -24,6 +51,7 @@ export default function ProfileClient({
   const [state, formAction] = useFormState(updateProfile, initialState);
 
   const { toast } = useToast();
+
   useEffect(() => {
     toast({
       title: state?.error?.profile ? "Error" : "Success",
@@ -66,6 +94,25 @@ export default function ProfileClient({
             </Button>
           </div>
         </form>
+        <div className="p-6">
+          <ConnectButton>Connect Wallet</ConnectButton>
+          <Button
+            className="hover:cursor-pointer"
+            disabled={pending}
+            onClick={() => {
+              connectionStatus === "connected"
+                ? claim(
+                    zkLoginState,
+                    zkLoginSession,
+                    account?.address,
+                    parseFloat(balance?.totalBalance ?? "")
+                  )
+                : alert("Please connect your wallet");
+            }}
+          >
+            {`Claim $${balance ? balance.totalBalance : "0"}`}
+          </Button>
+        </div>
         <div className="p-6">
           <DeleteAccount />
         </div>

@@ -1,6 +1,4 @@
 "use server";
-import MAINNET_ADDRESSES from "../../../../mainnet_deployed_addresses.json";
-import TESTNET_ADDRESSES from "../../../../testnet_deployed_addresses.json";
 import { buildSponsoredTxb, executeZkLoginTxb } from "../helpers/txb";
 import { buildGaslessTransactionBytes } from "@shinami/clients";
 import { getSuiClient } from "../helpers/getSuiClient";
@@ -9,11 +7,7 @@ import { SuiObjectResponse } from "@mysten/sui.js/client";
 import { revalidatePath } from "next/cache";
 import { SUI_TYPE, USDC_TYPE } from "@/utils/constants";
 import { deserializeZkLoginSession } from "../helpers/serde";
-
-const ADDRESSES =
-  process.env.NEXT_PUBLIC_SUI_NETWORK === "mainnet"
-    ? MAINNET_ADDRESSES
-    : TESTNET_ADDRESSES;
+import { ADDRESSES } from "@/utils/constants";
 
 export async function addBounty(
   state: string,

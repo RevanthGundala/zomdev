@@ -2,12 +2,12 @@ import { cn } from "../utils/shadcn-ui";
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
-
 import { Toaster } from "@/components/ui/toaster";
 import { CSPostHogProvider } from "./providers";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import SuiProvider from "@/components/SuiProvider";
+import { EvmProvider } from "@/components/EvmProvider";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -39,7 +39,7 @@ export default function RootLayout({
             fontSans.variable
           )}
         >
-          {children}
+          <EvmProvider>{children}</EvmProvider>
           <Toaster />
           <Analytics />
           <SpeedInsights />
