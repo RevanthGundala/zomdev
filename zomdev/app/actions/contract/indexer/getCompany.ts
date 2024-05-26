@@ -3,7 +3,7 @@ import { DynamicFieldInfo } from "@mysten/sui.js/client";
 import { getSuiClient } from "../helpers/getSuiClient";
 
 const NETWORK = process.env.NEXT_PUBLIC_SUI_NETWORK;
-const ADDRESSES = require(`../${NETWORK}_deployed_addresses.json`);
+const ADDRESSES = require(`../../../../${NETWORK}_deployed_addresses.json`);
 
 export async function getCompanies() {
   const companyObject = await getCompanyObject();
