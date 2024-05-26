@@ -32,7 +32,9 @@ export default function RootLayout({
   return (
     <SuiProvider>
       <html lang="en" suppressHydrationWarning className="overflow-y-auto">
-        <head />
+        <head>
+          <link rel="icon" href="/favicon.ico" />
+        </head>
         <body
           className={cn(
             "min-h-screen bg-background font-sans antialiased",
