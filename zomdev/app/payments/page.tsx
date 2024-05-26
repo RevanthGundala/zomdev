@@ -132,36 +132,17 @@ export default function Payments() {
       cardTokenizeResponseReceived={cardTokenizeResponseReceived}
       createPaymentRequest={createPaymentRequest}
     >
-      <div className="mt-40 grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl mx-auto py-12 px-4 md:px-6">
-        <div className="flex flex-col gap-4">
-          <div className="grid grid-cols-2 space-x-2 items-center">
-            {/* <div className="grid col-span-1 justify-center">
-              <GooglePay />
-            </div> */}
-            <div className="flex flex-col space-y-12">
-              <div className="text-2xl font-semibold text-center">
-                Buy with USDC
-              </div>
-              <div className="flex space-x-6">
-                <SuiConnectButton connectText="Sui Wallet" />
-                {/* <EvmConnectButton label="Evm Wallet" /> */}
-              </div>
+      <div className="mt-40 gap-6 w-full max-w-5xl mx-auto py-12 px-4 md:px-6">
+        <div className="mt-30 bg-gray-100 dark:bg-gray-800 rounded-lg p-6 flex flex-col gap-4 h-fit ">
+          <div className="space-y-4">
+            <div className="text-2xl font-semibold text-center">
+              Buy with USDC
             </div>
-          </div>
-          {/* <div className="bg-gray-200 dark:bg-gray-800 rounded-lg p-6 flex flex-col gap-4">
-            <div>
-              <h3 className="text-lg font-semibold">
-                Pay with card (Coming Soon)
-              </h3>
-              <p className="text-gray-500 dark:text-gray-400">
-                Enter your payment information.
-              </p>
+            <div className="text-center">
+              {" "}
+              <SuiConnectButton connectText="Sui Wallet" />
             </div>
-            <CreditCard includeInputLabels />
-          </div> */}
-        </div>
-        <div className="mt-30 bg-gray-100 dark:bg-gray-800 rounded-lg p-6 flex flex-col gap-4 h-fit">
-          <div>
+
             <h3 className="text-lg font-semibold">Order Summary</h3>
             <p className="text-gray-500 dark:text-gray-400">
               Review your order details.

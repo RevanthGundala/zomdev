@@ -7,7 +7,9 @@ import { SuiObjectResponse } from "@mysten/sui.js/client";
 import { revalidatePath } from "next/cache";
 import { SUI_TYPE, USDC_TYPE } from "@/utils/constants";
 import { deserializeZkLoginSession } from "../helpers/serde";
-import { ADDRESSES } from "@/utils/constants";
+
+const NETWORK = process.env.NEXT_PUBLIC_SUI_NETWORK;
+const ADDRESSES = require(`../${NETWORK}_deployed_addresses.json`);
 
 export async function addBounty(
   state: string,

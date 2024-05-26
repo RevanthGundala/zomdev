@@ -9,7 +9,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import { LogOut, User, BookHeart, SquarePen } from "lucide-react";
+import { LogOut, User, BookHeart, SquarePen, Book } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -92,7 +92,7 @@ export default function Navbar() {
                   </>
                 )}
                 <DropdownMenuItem>
-                  <BookHeart className="mr-2 h-4 w-4" />
+                  <Book className="mr-2 h-4 w-4" />
                   <Link href="/bounties/view/user">My Bounties</Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>

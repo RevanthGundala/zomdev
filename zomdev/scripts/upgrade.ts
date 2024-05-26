@@ -13,25 +13,22 @@ import { fileURLToPath } from "url";
 import { TransactionBlock } from "@mysten/sui.js/transactions";
 import { writeFileSync } from "fs";
 import { NAME } from "../utils/constants";
-import MAINNET_ADDRESSES from "../mainnet_deployed_addresses.json";
-import TESTNET_ADDRESSES from "../testnet_deployed_addresses.json";
 
 dotenv.config({ path: ".env.local" });
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 if (!PRIVATE_KEY) throw new Error("PRIVATE_KEY is not set");
 
-const ADDRESSES =
-  process.env.NEXT_PUBLIC_SUI_NETWORK === "mainnet"
-    ? MAINNET_ADDRESSES
-    : TESTNET_ADDRESSES;
-
-console.log("NETWORK: ", process.env.NEXT_PUBLIC_SUI_NETWORK);
-
 const keypair = Ed25519Keypair.fromSecretKey(fromHEX(PRIVATE_KEY));
+const NETWORK = process.env.NEXT_PUBLIC_SUI_NETWORK;
+const fullNodeUrl = getFullnodeUrl(
+  NETWORK === "mainnet" ? "mainnet" : "testnet"
+);
+const ADDRESSES = require(`../${NETWORK}_deployed_addresses.json`);
+console.log("Network: ", NETWORK);
+console.log("Addresses: ", ADDRESSES);
+console.log("Full Node URL: ", fullNodeUrl);
 const client = new SuiClient({
-  url: getFullnodeUrl(
-    process.env.NEXT_PUBLC_SUI_NETWORK === "mainnet" ? "mainnet" : "testnet"
-  ),
+  url: fullNodeUrl,
 });
 const path_to_scripts = dirname(fileURLToPath(import.meta.url));
 const path_to_contracts = path.join(
@@ -51,7 +48,7 @@ console.log("Upgrading contracts...");
 
 const { PACKAGE_ID, UPGRADE_CAP, ADMIN_CAP, PUBLISHER, PLATFORM } = ADDRESSES;
 
-main();
+// main();
 
 // TODO: Implement Upgrade Ticket
 async function main() {
@@ -66,6 +63,10 @@ async function main() {
     target: `${PACKAGE_ID}::version::current_version`,
     arguments: [],
   });
+  // txb1.moveCall({
+  //   target: `${PACKAGE_ID}::company::new`,
+  //   arguments: [txb1.object(PLATFORM), txb1.pure.string("Company 1")],
+  // });
   const tx = await client.signAndExecuteTransactionBlock({
     signer: keypair,
     transactionBlock: txb1,
@@ -95,24 +96,24 @@ async function main() {
   // Display the output
   console.log("Version: ", str);
 
-  // const txb = new TransactionBlock();
-  // txb.moveCall({
-  //   target: `${PACKAGE_ID}::platform::migrate`,
-  //   arguments: [txb.object(ADMIN_CAP), txb.object(PLATFORM)],
-  // });
-  // const { objectChanges } = await client.signAndExecuteTransactionBlock({
-  //   signer: keypair,
-  //   transactionBlock: txb,
-  //   options: {
-  //     showBalanceChanges: true,
-  //     showObjectChanges: true,
-  //     showEffects: true,
-  //     showEvents: true,
-  //     showInput: false,
-  //     showRawInput: false,
-  //   },
-  // });
-  // console.log("Object changes: ", objectChanges);
+  const txb = new TransactionBlock();
+  txb.moveCall({
+    target: `${PACKAGE_ID}::platform::migrate`,
+    arguments: [txb.object(ADMIN_CAP), txb.object(PLATFORM)],
+  });
+  const { objectChanges } = await client.signAndExecuteTransactionBlock({
+    signer: keypair,
+    transactionBlock: txb,
+    options: {
+      showBalanceChanges: true,
+      showObjectChanges: true,
+      showEffects: true,
+      showEvents: true,
+      showInput: false,
+      showRawInput: false,
+    },
+  });
+  console.log("Object changes: ", objectChanges);
   //   const upgradedPackageId = objectChanges?.find((change: SuiObjectChange) =>
   //     change.type === "published" ? change.packageId : null
   //   );

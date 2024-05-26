@@ -1,6 +1,6 @@
 "use server";
 
-import { ADDRESSES, SUI_TYPE, USDC_TYPE } from "@/utils/constants";
+import { SUI_TYPE, USDC_TYPE } from "@/utils/constants";
 import { getSuiClient } from "../helpers/getSuiClient";
 import { buildGaslessTransactionBytes } from "@shinami/clients";
 import { executeZkLoginTxb } from "../helpers/txb";
@@ -40,8 +40,9 @@ export async function claim(
           const sourceCoins = restOfCoins.map((coin) => txb.object(coin));
           [destinationCoin] = txb.mergeCoins(destinationCoin, sourceCoins);
         }
+        /// const usdc = destinationCoin;
         const [usdc] = txb.splitCoins(destinationCoin, [balance]);
-        txb.transferObjects([usdc], txb.pure.address(new_address));
+        txb.transferObjects([usdc], new_address);
       },
     });
     console.log("Gasless Payload: ", gaslessPayloadBase64);

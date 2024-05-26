@@ -1,13 +1,9 @@
 "use server";
 import { DynamicFieldInfo } from "@mysten/sui.js/client";
-import MAINNET_ADDRESSES from "../../../../mainnet_deployed_addresses.json";
-import TESTNET_ADDRESSES from "../../../../testnet_deployed_addresses.json";
 import { getSuiClient } from "../helpers/getSuiClient";
 
-const ADDRESSES =
-  process.env.NEXT_PUBLIC_SUI_NETWORK === "mainnet"
-    ? MAINNET_ADDRESSES
-    : TESTNET_ADDRESSES;
+const NETWORK = process.env.NEXT_PUBLIC_SUI_NETWORK;
+const ADDRESSES = require(`../${NETWORK}_deployed_addresses.json`);
 
 export async function getCompanies() {
   const companyObject = await getCompanyObject();

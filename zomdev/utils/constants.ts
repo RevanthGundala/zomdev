@@ -1,10 +1,3 @@
-import MAINNET_ADDRESSES from "../mainnet_deployed_addresses.json";
-import TESTNET_ADDRESSES from "../testnet_deployed_addresses.json";
-export const ADDRESSES =
-  process.env.NEXT_PUBLIC_SUI_NETWORK === "mainnet"
-    ? MAINNET_ADDRESSES
-    : TESTNET_ADDRESSES;
-
 export const NAME = "Zomdev";
 export const MAX_LENGTH = 175;
 

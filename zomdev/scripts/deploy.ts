@@ -22,6 +22,7 @@ console.log("NETWORK: ", NETWORK);
 if (!NETWORK) throw new Error("NEXT_PUBLIC_SUI_NETWORK is not set");
 
 const keypair = Ed25519Keypair.fromSecretKey(fromHEX(PRIVATE_KEY));
+
 const client = new SuiClient({
   url: getFullnodeUrl(NETWORK === "mainnet" ? "mainnet" : "testnet"),
 });
@@ -97,7 +98,7 @@ async function main() {
 
   const deployed_path = path.join(
     path_to_scripts,
-    process.env.NEXT_SUI_PUBLIC_NETWORK === "mainnet"
+    NETWORK === "mainnet"
       ? "../mainnet_deployed_addresses.json"
       : "../testnet_deployed_addresses.json"
   );

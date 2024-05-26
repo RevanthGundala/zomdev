@@ -39,7 +39,7 @@ export default function RootLayout({
             fontSans.variable
           )}
         >
-          <EvmProvider>{children}</EvmProvider>
+          {children}
           <Toaster />
           <Analytics />
           <SpeedInsights />

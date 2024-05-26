@@ -74,5 +74,5 @@ export async function GET(request: Request) {
   } else {
     console.log("Code not found in request");
   }
-  return NextResponse.redirect(`${origin}/${location}`);
+  return NextResponse.redirect(`${origin}/bounties`);
 }
